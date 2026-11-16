@@ -1,6 +1,6 @@
-# Static file server for previewing PavnoStudio-main/dist locally (no Node/Python needed).
+# Static file server for previewing PavnoStudio/dist locally (no Node/Python needed).
 param([int]$Port = 8765)
-$root = Join-Path $PSScriptRoot '..\PavnoStudio-main\dist' | Resolve-Path | Select-Object -ExpandProperty Path
+$root = Join-Path $PSScriptRoot '..\PavnoStudio\dist' | Resolve-Path | Select-Object -ExpandProperty Path
 $mime = @{ '.html'='text/html; charset=utf-8'; '.js'='text/javascript; charset=utf-8'; '.css'='text/css; charset=utf-8';
   '.png'='image/png'; '.jpg'='image/jpeg'; '.jpeg'='image/jpeg'; '.svg'='image/svg+xml'; '.pdf'='application/pdf';
   '.mp4'='video/mp4'; '.json'='application/json'; '.ico'='image/x-icon'; '.webp'='image/webp' }
