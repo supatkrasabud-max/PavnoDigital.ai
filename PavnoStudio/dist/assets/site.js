@@ -17,7 +17,7 @@
   const hdr = document.getElementById('site-header');
   if (hdr) {
     hdr.outerHTML = `<div class="bar">ใหม่! สมุดฝึก 11 เล่ม เริ่มต้น 79 บาท · พิมพ์ได้ไม่จำกัด · <a href="${L('/books/')}">เลือกเลย</a></div>
-<header class="hdr"><div class="wrap"><a class="logo" href="${L('/')}"><img src="/assets/pavno-logo.png" alt="" width="36" height="36">PAVNO</a>
+<header class="hdr"><div class="wrap"><a class="logo" href="${L('/')}"><img src="/assets/pavno-logo-tile.png" alt="" width="36" height="36">PAVNO</a>
 <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="เปิดเมนู">☰</button>
 <nav class="nav" id="nav">${nav.map(([h, t]) => `<a href="${L(h)}"${(h === here || (h === '/books/' && here === '/books/' && !location.search)) ? ' aria-current="page"' : ''}>${t}</a>`).join('')}</nav>
 <a class="btn sm" href="${L('/books/')}">ซื้อสมุด</a></div></header>`;
@@ -28,7 +28,7 @@
   const ftr = document.getElementById('site-footer');
   if (ftr) {
     ftr.outerHTML = `<footer class="ftr"><div class="wrap">
-<div class="about"><a class="logo" href="/" style="color:#fff"><img src="/assets/pavno-logo.png" alt="" width="36" height="36">PAVNO DIGITAL</a>
+<div class="about"><a class="logo" href="/" style="color:#fff"><img src="/assets/pavno-logo-tile.png" alt="" width="36" height="36">PAVNO DIGITAL</a>
 <p style="margin-top:10px">สมุดฝึกอ่าน เขียน คิดเลข และระบายสี สำหรับเด็ก ไฟล์ PDF พิมพ์ได้ไม่จำกัดในบ้านและห้องเรียน ตัวการ์ตูนออกแบบใหม่ทั้งหมด</p>
 <div class="pay"><span>PromptPay</span><span>Visa / Mastercard</span><span>Apple Pay</span><span>Google Pay</span></div></div>
 <div><h4>สินค้า</h4><a href="${L('/books/?cat=lang')}">ภาษาไทย · อังกฤษ</a><a href="${L('/books/?cat=asia')}">ญี่ปุ่น · จีน</a><a href="${L('/books/?cat=math')}">คณิตศาสตร์</a><a href="${L('/books/?cat=color')}">ระบายสี</a></div>

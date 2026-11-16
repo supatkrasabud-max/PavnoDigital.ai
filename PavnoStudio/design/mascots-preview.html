@@ -1,0 +1,14 @@
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAVNO mascots v2</title>
+<style>body{margin:0;padding:24px;font:15px/1.5 system-ui,sans-serif;background:#fffaf3;color:#1f2d3a}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 10px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.g div{background:#fff;border-radius:16px;padding:8px;text-align:center;font-size:12px;box-shadow:0 4px 14px rgba(31,45,58,.07)}
+.g img{width:100%;display:block}</style>
+<h1>PAVNO mascots v2</h1><p>ตัวการ์ตูน 24 ตัว แบบสี (ใช้บนเว็บและปก) และแบบลายเส้น (ใช้ในหน้าระบายสี)</p>
+<h2>แบบสี</h2><div class="g" id="c"></div><h2>แบบลายเส้นสำหรับระบายสี</h2><div class="g" id="l"></div>
+<script>
+const n='bear bunny cat puppy pig lion frog elephant owl penguin duck dino unicorn turtle fish whale octopus snail butterfly robot rocket car cupcake house'.split(' ');
+c.innerHTML=n.map(x=>`<div><img src="../dist/assets/mascots/${x}.svg" alt="${x}">${x}</div>`).join('');
+l.innerHTML=n.map(x=>`<div><img src="mascots-lineart/${x}.svg" alt="${x}">${x}</div>`).join('');
+</script></html>
