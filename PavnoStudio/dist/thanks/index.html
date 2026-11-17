@@ -1,0 +1,72 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ขอบคุณที่สั่งซื้อ | PAVNO DIGITAL</title><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#fffaf3">
+<link rel="icon" href="/assets/pavno-logo-tile.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=7"><style>
+.thanks{max-width:640px;margin:0 auto;padding:40px 20px 30px;text-align:center}
+.thanks img.mascot{width:150px;height:150px;margin:0 auto 6px;display:block}
+.thanks h1{font-size:clamp(26px,4vw,36px);margin-bottom:8px}
+.thanks p{color:var(--muted);margin-bottom:12px}
+.thanks .box{background:#fff;border:2px solid var(--line);border-radius:22px;padding:24px 20px;margin:20px 0;text-align:center}
+.thanks .box h2{font-size:20px;margin-bottom:14px}
+.thanks .files{display:flex;flex-direction:column;gap:14px;align-items:center}
+.thanks .files .btn{min-width:min(100%,280px)}
+.thanks .tips{text-align:left;font-size:15px;padding-left:22px;margin-top:18px}
+.thanks .tips li{color:var(--muted);margin-bottom:6px}
+.thanks a.link{text-decoration:underline;color:var(--ink)}
+.thanks .en{font-size:14px}
+</style></head><body>
+<div id="site-header"></div>
+<main><div class="thanks">
+<img class="mascot" src="/assets/mascots/bunny.svg" alt="">
+<h1 id="t-title">กำลังตรวจสอบการชำระเงิน…</h1>
+<p id="t-msg">รอสักครู่นะคะ <span class="en">(Checking your payment…)</span></p>
+<div class="box" id="t-box" hidden>
+<h2 id="t-name"></h2>
+<div class="files" id="t-files"></div>
+<ul class="tips">
+<li>เปิดลิงก์แล้วกดปุ่มดาวน์โหลด (ลูกศรชี้ลง) เพื่อเก็บไฟล์ PDF ไว้ในเครื่อง</li>
+<li>บันทึกหน้านี้ไว้ กลับมาดาวน์โหลดซ้ำได้ภายใน 90 วัน</li>
+<li>พิมพ์ที่บ้านหรือร้านถ่ายเอกสารได้เลย แนะนำกระดาษ A4 80 แกรม</li>
+</ul>
+</div>
+<p id="t-help" hidden>ติดปัญหา? โทร 098-914-7999 หรือดูที่หน้า <a class="link" href="/contact/">ติดต่อเรา</a> พร้อมแจ้งอีเมลที่ใช้ชำระเงิน เราจะส่งไฟล์ให้ภายใน 24 ชั่วโมง<br><span class="en">Need help? Call +66 98 914 7999 or see our <a class="link" href="/contact/">contact page</a>.</span></p>
+<p><a class="btn ghost" href="/learn/">ดูสมุดฝึกเล่มอื่น</a></p>
+</div></main>
+<div id="site-footer"></div>
+<script src="/assets/payment-links.js?v=3"></script><script src="/assets/launch-products.js?v=7"></script><script src="/assets/site.js?v=8"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var MESSAGES={
+    bad_session:['ไม่พบข้อมูลคำสั่งซื้อ','ลิงก์นี้ไม่ครบ กรุณาเปิดจากหน้าที่ระบบพามาหลังชำระเงินอีกครั้ง'],
+    not_found:['ไม่พบข้อมูลคำสั่งซื้อ','ลิงก์นี้ไม่ถูกต้อง กรุณาเปิดจากหน้าที่ระบบพามาหลังชำระเงินอีกครั้ง'],
+    not_paid:['ยังไม่ได้รับยอดชำระเงิน','ถ้าเพิ่งจ่ายผ่าน PromptPay รอ 1–2 นาทีแล้วกดโหลดหน้านี้ใหม่'],
+    expired:['ลิงก์ดาวน์โหลดหมดอายุแล้ว','ลิงก์ใช้ได้ 90 วันหลังชำระเงิน ติดต่อเราเพื่อขอไฟล์อีกครั้งได้เลย'],
+    other:['ขอบคุณที่สั่งซื้อค่ะ','เราได้รับคำสั่งซื้อแล้ว แต่ระบบดาวน์โหลดขัดข้องชั่วคราว เราจะส่งไฟล์ให้ทางอีเมลที่ใช้ชำระเงินภายใน 24 ชั่วโมง']
+  };
+  function fail(code){
+    var m=MESSAGES[code]||MESSAGES.other;
+    $('t-title').textContent=m[0];$('t-msg').textContent=m[1];$('t-help').hidden=false;
+  }
+  var sessionId=new URLSearchParams(location.search).get('session_id')||'';
+  if(!sessionId){fail('bad_session');return}
+  fetch('/api/download?session_id='+encodeURIComponent(sessionId),{cache:'no-store'})
+    .then(function(r){return r.json().catch(function(){return {error:'other'}})})
+    .then(function(data){
+      if(!data||data.error||!data.files||!data.files.length){fail(data&&data.error);return}
+      $('t-title').textContent='ขอบคุณที่สั่งซื้อค่ะ';
+      $('t-msg').textContent='ชำระเงินเรียบร้อย ไฟล์ของคุณพร้อมแล้ว (Payment received. Your file is ready.)';
+      $('t-name').textContent=data.name||'';
+      data.files.forEach(function(f){
+        if(!/^https:\/\//.test(f.url))return;
+        var a=document.createElement('a');
+        a.className='btn';a.href=f.url;a.target='_blank';a.rel='noopener';
+        a.textContent='ดาวน์โหลดไฟล์ PDF'+(f.label?' ('+f.label+')':'');
+        $('t-files').appendChild(a);
+      });
+      $('t-box').hidden=false;$('t-help').hidden=false;
+    })
+    .catch(function(){fail('other')});
+})();
+</script>
+</body></html>
