@@ -1,0 +1,301 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PAVNO IT | ระบบ AI, Workflow และวางระบบ IT สำหรับธุรกิจ</title>
+<meta name="description" content="PAVNO IT รับทำ AI Application ให้บริษัท ระบบ Workflow อัตโนมัติ และวางระบบ IT แบบลงทุนน้อย ทำเองทั้งระบบพร้อมเป็นที่ปรึกษา สำหรับธุรกิจ SME">
+<meta name="theme-color" content="#121a26">
+<meta property="og:title" content="PAVNO IT | ระบบ AI, Workflow และวางระบบ IT สำหรับธุรกิจ"><meta property="og:description" content="ทำระบบ AI และงานอัตโนมัติให้ธุรกิจ เริ่มเล็ก ลงทุนน้อย ใช้งานได้จริง พร้อมที่ปรึกษาดูแลต่อเนื่อง"><meta property="og:type" content="website"><meta property="og:url" content="https://www.pavnodigital.com/it/"><meta property="og:image" content="https://www.pavnodigital.com/assets/pavno-logo-tile.png">
+<link rel="canonical" href="https://www.pavnodigital.com/it/">
+<link rel="icon" href="/assets/pavno-logo-tile.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#0f1621;--bg2:#141e2c;--panel:#18243450;--card:#1a2636;--line:#2a3a50;--ink:#eef3f8;--muted:#9fb0c3;
+  --gold:#d9b46a;--gold2:#f0d79c;--teal:#5fd3c4;--paper:#f7f4ee;--paper-ink:#1a2433;--paper-muted:#5a6676;
+  --max:1160px;--r:18px;
+  --font:'Noto Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;--head:'Mitr','Noto Sans Thai',sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font:16px/1.7 var(--font);color:var(--ink);background:var(--bg);overflow-x:hidden}
+img,svg{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--head);font-weight:500;line-height:1.25;letter-spacing:-.005em}
+h1{font-size:clamp(34px,5.4vw,60px)}h2{font-size:clamp(26px,3.4vw,40px)}h3{font-size:20px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.eyebrow::before{content:"";width:28px;height:1px;background:currentColor}
+.lead{font-size:clamp(17px,1.6vw,19px);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:12px 26px;border-radius:999px;font-weight:600;border:1px solid transparent;transition:transform .2s,background .2s,border-color .2s;cursor:pointer}
+.btn:hover{transform:translateY(-2px)}
+.btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1407}
+.btn.line{border-color:#3a4c64;color:var(--ink)}
+.btn.line:hover{border-color:var(--gold)}
+.btn.dark{background:var(--paper-ink);color:#fff}
+
+/* header */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(15,22,33,.86);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.hdr .wrap{display:flex;align-items:center;gap:18px;height:70px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--head);font-size:19px;letter-spacing:.04em}
+.logo img{width:36px;height:36px;border-radius:9px}
+.logo small{font-family:var(--font);font-size:12px;letter-spacing:.16em;color:var(--gold);border:1px solid #4a3f28;border-radius:6px;padding:1px 7px}
+.nav{display:flex;gap:2px;margin-left:auto}
+.nav a{padding:8px 14px;border-radius:999px;font-size:15px;color:var(--muted)}
+.nav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.hdr .btn{min-height:42px;padding:8px 20px;font-size:15px}
+.menu-btn{display:none;margin-left:auto;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:20px}
+@media(max-width:900px){
+  .menu-btn{display:block}
+  .nav{position:absolute;top:100%;left:0;right:0;flex-direction:column;background:var(--bg2);padding:10px 20px 20px;border-bottom:1px solid var(--line);margin:0;visibility:hidden;opacity:0;transform:translateY(-8px);transition:.2s}
+  .nav.open{visibility:visible;opacity:1;transform:none}
+  .nav a{padding:14px 10px;font-size:17px;border-radius:10px}
+  .hdr .btn{display:none}
+}
+
+/* hero */
+.hero{position:relative;padding:88px 0 96px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-30% -10% auto auto;width:720px;height:720px;background:radial-gradient(closest-side,rgba(217,180,106,.16),transparent);pointer-events:none}
+.hero::after{content:"";position:absolute;left:-200px;bottom:-300px;width:640px;height:640px;background:radial-gradient(closest-side,rgba(95,211,196,.10),transparent);pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero h1{margin:18px 0 20px}
+.hero h1 em{font-style:normal;background:linear-gradient(120deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero .facts{display:flex;flex-wrap:wrap;gap:22px;margin-top:34px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);font-size:14px;color:var(--muted)}
+.hero .facts b{display:block;color:var(--ink);font-size:16px;font-weight:600}
+.flow{background:linear-gradient(180deg,#182435,#121b28);border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.flow .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-bottom:18px}
+.flow .top i{font-style:normal;color:var(--teal)}
+.step{display:flex;gap:14px;align-items:center;background:#1c2a3d;border:1px solid #2c3e56;border-radius:14px;padding:14px 16px}
+.step .ic{flex:none;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#24364e}
+.step .ic svg{width:22px;height:22px}
+.step b{display:block;font-weight:600;font-size:15px}
+.step span{font-size:13px;color:var(--muted)}
+.step.ai{border-color:#5a4b2c;background:linear-gradient(135deg,#2a2618,#1c2a3d)}
+.step.ai .ic{background:#3b331f}
+.link{width:2px;height:18px;margin:4px 0 4px 35px;background:linear-gradient(var(--line),var(--gold))}
+
+/* sections */
+section{padding:96px 0;scroll-margin-top:70px}
+.sec-head{max-width:720px;margin-bottom:48px}
+.sec-head h2{margin:14px 0 14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.svc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:30px 28px;display:flex;flex-direction:column;transition:border-color .25s,transform .25s}
+.svc:hover{border-color:#5a4b2c;transform:translateY(-4px)}
+.svc .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#24364e;margin-bottom:22px}
+.svc .ic svg{width:26px;height:26px}
+.svc h3{margin-bottom:10px}
+.svc p{color:var(--muted);margin-bottom:18px}
+.svc ul{list-style:none;padding:0;border-top:1px solid var(--line);padding-top:16px;margin-top:auto}
+.svc li{position:relative;padding-left:22px;margin-bottom:8px;font-size:15px}
+.svc li::before{content:"";position:absolute;left:2px;top:.72em;width:8px;height:8px;border-radius:2px;background:var(--gold);transform:rotate(45deg)}
+
+/* light band */
+.paper{background:var(--paper);color:var(--paper-ink)}
+.paper .eyebrow{color:#9a7a36}
+.paper .lead,.paper p{color:var(--paper-muted)}
+.pkgs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.pkg{background:#fff;border:1px solid #e6dfd2;border-radius:var(--r);padding:28px 24px;display:flex;flex-direction:column}
+.pkg .tag{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9a7a36;margin-bottom:10px}
+.pkg h3{margin-bottom:8px;color:var(--paper-ink)}
+.pkg .for{font-size:14px;margin-bottom:18px}
+.pkg dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;padding:14px 0;border-top:1px solid #eee6d8;border-bottom:1px solid #eee6d8;margin-bottom:16px}
+.pkg dt{color:var(--paper-muted)}.pkg dd{margin:0;font-weight:600;text-align:right}
+.pkg ul{padding-left:18px;font-size:14px;color:var(--paper-muted);margin-bottom:22px}
+.pkg li{margin-bottom:6px}
+.pkg .btn{margin-top:auto;min-height:44px;font-size:15px}
+.pkg.star{background:var(--paper-ink);border-color:var(--paper-ink);color:#fff}
+.pkg.star h3{color:#fff}.pkg.star .tag{color:var(--gold2)}
+.pkg.star p,.pkg.star ul,.pkg.star dt{color:#b8c4d2}
+.pkg.star dl{border-color:#2f3f55}
+.pkg.star .btn{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1407}
+.note{margin-top:22px;font-size:14px}
+
+/* approach */
+.split{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.points{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.point{border-top:1px solid var(--line);padding-top:18px}
+.point b{display:block;font-family:var(--head);font-weight:500;font-size:18px;margin-bottom:6px}
+.point p{color:var(--muted);font-size:15px}
+
+/* proof */
+.proof{background:linear-gradient(180deg,var(--bg2),var(--bg))}
+.proof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pf{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.pf .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.pf b{display:block;font-weight:600;margin-bottom:6px}
+.pf p{font-size:14px;color:var(--muted)}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s;border-top:1px solid var(--line)}
+.steps li{list-style:none;padding:26px 22px 0 0;position:relative;counter-increment:s}
+.steps li::before{content:"0" counter(s);display:block;font-family:var(--head);font-size:34px;color:var(--gold);margin-bottom:10px}
+.steps b{display:block;font-weight:600;margin-bottom:6px;font-size:17px}
+.steps p{color:var(--muted);font-size:15px}
+
+/* faq */
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:20px 0}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px;font-weight:600;font-size:17px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--gold);font-size:22px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);margin-top:12px}
+
+/* cta */
+.final{padding:0 0 96px}
+.final .box{position:relative;overflow:hidden;border-radius:28px;padding:64px 48px;background:linear-gradient(135deg,#1d2b40,#131c29);border:1px solid #3a3222;text-align:center}
+.final .box::before{content:"";position:absolute;inset:auto -10% -60% -10%;height:300px;background:radial-gradient(closest-side,rgba(217,180,106,.18),transparent)}
+.final h2{position:relative;margin-bottom:14px}
+.final p{position:relative;color:var(--muted);max-width:620px;margin:0 auto 28px}
+.final .cta{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+
+/* footer */
+.ftr{border-top:1px solid rgba(255,255,255,.06);padding:36px 0;font-size:14px;color:var(--muted)}
+.ftr .wrap{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;justify-content:space-between}
+.ftr nav{display:flex;flex-wrap:wrap;gap:18px}
+.ftr a:hover{color:var(--ink)}
+
+@media(max-width:1000px){
+  .hero .wrap,.split{grid-template-columns:1fr;gap:40px}
+  .grid3{grid-template-columns:1fr}
+  .pkgs,.proof-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:10px 0}
+}
+@media(max-width:600px){
+  section{padding:68px 0}.hero{padding:56px 0 64px}
+  .pkgs,.proof-grid,.points,.steps{grid-template-columns:1fr}
+  .final .box{padding:44px 22px}
+  .hero .cta .btn,.final .cta .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+
+<header class="hdr"><div class="wrap">
+<a class="logo" href="/it/"><img src="/assets/pavno-logo-tile.png" alt="" width="36" height="36">PAVNO <small>IT</small></a>
+<button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="เปิดเมนู">☰</button>
+<nav class="nav" id="nav"><a href="#services">บริการ</a><a href="#packages">แพ็กเกจ</a><a href="#process">ขั้นตอน</a><a href="#faq">คำถาม</a><a href="/">ร้านสมุดฝึกเด็ก</a></nav>
+<a class="btn gold" href="#contact">นัดคุยงาน</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+<div>
+<span class="eyebrow">PAVNO DIGITAL · IT SOLUTIONS</span>
+<h1>ระบบ AI และงานอัตโนมัติ<br>ที่ธุรกิจคุณ<em>ใช้ได้จริง</em></h1>
+<p class="lead">เราออกแบบ สร้าง และดูแลระบบให้ครบทั้งหมด ตั้งแต่แชตบอท AI ระบบอนุมัติเอกสาร ไปจนถึงวางระบบ IT ของบริษัท เริ่มจากงานเล็กที่เห็นผลเร็ว ลงทุนน้อย แล้วค่อยขยายเมื่อพร้อม</p>
+<div class="cta"><a class="btn gold" href="#contact">ปรึกษาเบื้องต้นฟรี</a><a class="btn line" href="#packages">ดูแพ็กเกจบริการ</a></div>
+<div class="facts"><div><b>ทำเองทั้งระบบ</b>ไม่ส่งต่องานให้คนอื่น</div><div><b>ราคาคงที่</b>แจ้งก่อนเริ่มงาน</div><div><b>มีที่ปรึกษาดูแลต่อ</b>หลังส่งมอบ</div></div>
+</div>
+<div class="flow" aria-label="ตัวอย่างระบบอัตโนมัติ: ลูกค้าสั่งของทาง LINE แล้ว AI จัดการต่อจนถึงแจ้งทีม">
+<div class="top"><span>ตัวอย่าง: ระบบรับออเดอร์อัตโนมัติ</span><i>● ทำงานอยู่</i></div>
+<div class="step"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5fd3c4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div><div><b>ลูกค้าทักแชต LINE</b><span>"ขอราคาสินค้า 50 ชิ้น ส่งพรุ่งนี้ได้ไหม"</span></div></div>
+<div class="link"></div>
+<div class="step ai"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#f0d79c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></div><div><b>AI อ่าน ตอบ และคำนวณราคา</b><span>ตรวจสต็อก ใช้ราคาตามเงื่อนไขของร้าน</span></div></div>
+<div class="link"></div>
+<div class="step"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5fd3c4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></div><div><b>บันทึกลง Google Sheets</b><span>ออกใบเสนอราคา PDF ส่งให้ลูกค้า</span></div></div>
+<div class="link"></div>
+<div class="step"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5fd3c4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></div><div><b>แจ้งทีมขายให้ยืนยัน</b><span>คนตัดสินใจเฉพาะเรื่องที่สำคัญ</span></div></div>
+</div>
+</div></section>
+
+<section id="services"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">บริการของเรา</span><h2>สามบริการหลัก ทำจบในที่เดียว</h2><p class="lead">เลือกเฉพาะส่วนที่ธุรกิจต้องการตอนนี้ ทุกบริการมาพร้อมคู่มือ การสอนทีมงาน และที่ปรึกษาหลังส่งมอบ</p></div>
+<div class="grid3">
+<article class="svc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#f0d79c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></div>
+<h3>AI Application สำหรับบริษัท</h3><p>ผู้ช่วย AI ที่รู้จักธุรกิจของคุณ ตอบลูกค้า ค้นข้อมูลในเอกสารบริษัท และสรุปงานให้ผู้บริหาร</p>
+<ul><li>แชตบอท AI บน LINE OA หรือเว็บไซต์</li><li>ผู้ช่วยค้นคู่มือ นโยบาย และเอกสารภายใน</li><li>สรุปรายงานยอดขายและการประชุมอัตโนมัติ</li><li>อ่านใบเสร็จ ใบแจ้งหนี้ แล้วกรอกข้อมูลให้</li></ul></article>
+<article class="svc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#f0d79c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.5 6h9M6.5 8.2l4.2 7.6M17.5 8.2l-4.2 7.6"/></svg></div>
+<h3>ระบบ Workflow อัตโนมัติ</h3><p>เปลี่ยนงานซ้ำ ๆ ที่ทีมทำด้วยมือทุกวันให้ระบบทำแทน ลดความผิดพลาดและเวลาที่เสียไป</p>
+<ul><li>ระบบขออนุมัติ ลา เบิกเงิน ใบสั่งซื้อ</li><li>แจ้งเตือนงานและสถานะผ่าน LINE หรืออีเมล</li><li>เชื่อมระบบชำระเงิน บัญชี และ Google Sheets</li><li>รายงานสรุปส่งเข้ากลุ่มผู้บริหารตามเวลา</li></ul></article>
+<article class="svc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#f0d79c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+<h3>วางระบบ IT แบบลงทุนน้อย</h3><p>โครงสร้าง IT ที่บริษัทเล็กควรมี ใช้บริการคลาวด์รายเดือน ไม่ต้องซื้อเซิร์ฟเวอร์หรือจ้างทีม IT ประจำ</p>
+<ul><li>อีเมลบริษัทและโดเมนของตัวเอง</li><li>ที่เก็บไฟล์กลางและระบบสำรองข้อมูล</li><li>เว็บไซต์พร้อมระบบรับชำระเงินออนไลน์</li><li>ตั้งค่าความปลอดภัยบัญชีและสิทธิ์พนักงาน</li></ul></article>
+</div>
+</div></section>
+
+<section class="paper" id="packages"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">แพ็กเกจบริการ</span><h2>เริ่มต้นจากแพ็กเกจที่ตรงกับคุณ</h2><p class="lead">ทุกแพ็กเกจมีขอบเขตงานชัดเจนและราคาคงที่ เราประเมินและแจ้งราคาเป็นลายลักษณ์อักษรก่อนเริ่มงานทุกครั้ง ไม่มีค่าใช้จ่ายแอบแฝง</p></div>
+<div class="pkgs">
+<article class="pkg"><div class="tag">เริ่มที่นี่</div><h3>ตรวจสุขภาพระบบ IT</h3><p class="for">สำหรับธุรกิจที่ยังไม่แน่ใจว่าควรเริ่มตรงไหน</p>
+<dl><dt>ระยะเวลา</dt><dd>ประมาณ 1–2 สัปดาห์</dd><dt>ส่งมอบ</dt><dd>รายงาน + แผนงาน</dd></dl>
+<ul><li>สัมภาษณ์ทีมและดูขั้นตอนงานจริง</li><li>หางานที่ทำอัตโนมัติได้และคุ้มที่สุด</li><li>แผนลงทุนเรียงตามลำดับความสำคัญ</li></ul>
+<a class="btn dark" href="#contact">สอบถามราคา</a></article>
+<article class="pkg"><div class="tag">ขายดี</div><h3>Workflow Starter</h3><p class="for">ทำงานอัตโนมัติให้ 1 กระบวนการ เห็นผลเร็ว</p>
+<dl><dt>ระยะเวลา</dt><dd>ประมาณ 2–4 สัปดาห์</dd><dt>ส่งมอบ</dt><dd>ระบบพร้อมใช้</dd></dl>
+<ul><li>เช่น ขออนุมัติ รับออเดอร์ หรือแจ้งเตือน</li><li>เชื่อมกับ LINE, อีเมล, Google Sheets</li><li>คู่มือและสอนการใช้งานทีม</li></ul>
+<a class="btn dark" href="#contact">สอบถามราคา</a></article>
+<article class="pkg star"><div class="tag">แนะนำ</div><h3>AI Assistant</h3><p class="for">ผู้ช่วย AI หนึ่งตัวที่รู้ข้อมูลธุรกิจคุณ</p>
+<dl><dt>ระยะเวลา</dt><dd>ประมาณ 4–6 สัปดาห์</dd><dt>ส่งมอบ</dt><dd>AI พร้อมใช้งาน</dd></dl>
+<ul><li>แชตบอทตอบลูกค้าหรือผู้ช่วยภายใน</li><li>สอน AI จากเอกสารและข้อมูลของคุณ</li><li>ทดสอบกับคำถามจริงก่อนเปิดใช้</li></ul>
+<a class="btn" href="#contact">สอบถามราคา</a></article>
+<article class="pkg"><div class="tag">ต่อเนื่อง</div><h3>ที่ปรึกษา IT รายเดือน</h3><p class="for">เหมือนมีฝ่าย IT ของบริษัท โดยไม่ต้องจ้างประจำ</p>
+<dl><dt>สัญญา</dt><dd>รายเดือน</dd><dt>ส่งมอบ</dt><dd>ดูแล + ปรับปรุง</dd></dl>
+<ul><li>ดูแลระบบที่เราทำให้ทำงานต่อเนื่อง</li><li>ประชุมวางแผนและให้คำแนะนำ</li><li>ปรับปรุงและเพิ่มงานอัตโนมัติทีละขั้น</li></ul>
+<a class="btn dark" href="#contact">สอบถามราคา</a></article>
+</div>
+<p class="note">ค่าบริการคลาวด์และ AI รายเดือน (เช่น Google Workspace, LINE OA, ค่าใช้ AI) จ่ายตรงกับผู้ให้บริการในชื่อบริษัทคุณ เราช่วยเลือกแพ็กเกจที่ประหยัดที่สุดให้</p>
+</div></section>
+
+<section><div class="wrap split">
+<div class="sec-head" style="margin-bottom:0"><span class="eyebrow">แนวทางของเรา</span><h2>ลงทุนน้อย แต่ได้ระบบที่ใช้ได้นาน</h2><p class="lead">เราไม่ขายระบบใหญ่ที่ธุรกิจยังไม่ต้องการ เริ่มจากปัญหาที่เสียเวลาที่สุดก่อน พิสูจน์ว่าได้ผล แล้วค่อยขยาย</p></div>
+<div class="points">
+<div class="point"><b>ใช้เครื่องมือที่มีอยู่แล้ว</b><p>ต่อยอดจาก LINE, Google Workspace และระบบที่ทีมคุ้นเคย ไม่ต้องเปลี่ยนวิธีทำงานทั้งบริษัท</p></div>
+<div class="point"><b>ไม่ต้องซื้อเซิร์ฟเวอร์</b><p>ใช้บริการคลาวด์จ่ายตามการใช้งาน ค่าใช้จ่ายรายเดือนต่ำและขยายได้เมื่อธุรกิจโต</p></div>
+<div class="point"><b>ข้อมูลและบัญชีเป็นของคุณ</b><p>ทุกระบบเปิดในชื่อบริษัทคุณ ส่งมอบรหัสผ่านและเอกสารครบ ไม่ผูกขาดกับเรา</p></div>
+<div class="point"><b>ทีมใช้เป็นจริง</b><p>ส่งมอบพร้อมคู่มือภาษาไทยและสอนทีมงาน จนใช้งานเองได้โดยไม่ต้องโทรถามทุกครั้ง</p></div>
+</div>
+</div></section>
+
+<section class="proof"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">ระบบที่เราใช้เอง</span><h2>เราใช้ระบบแบบเดียวกันนี้บริหารธุรกิจของเราทุกวัน</h2><p class="lead">PAVNO DIGITAL ขายสินค้าดิจิทัลออนไลน์ และใช้ระบบที่เราสร้างเองตั้งแต่หน้าร้านจนถึงบัญชี</p></div>
+<div class="proof-grid">
+<div class="pf"><div class="k">AI Team</div><b>ทีมผู้ช่วย AI ใน LINE</b><p>ผู้ช่วยผู้บริหาร ฝ่ายการเงิน และวิศวกร รับคำสั่งผ่านแชต LINE ของทีม</p></div>
+<div class="pf"><div class="k">Workflow</div><b>บันทึกยอดขายอัตโนมัติ</b><p>ทุกการชำระเงินบันทึกลงบัญชีใน Google Sheets และแจ้งเข้ากลุ่มทันที</p></div>
+<div class="pf"><div class="k">E-commerce</div><b>ชำระเงินแล้วได้ไฟล์ทันที</b><p>ตรวจการชำระเงินกับ Stripe แล้วพาลูกค้าไปหน้าดาวน์โหลดอัตโนมัติ</p></div>
+<div class="pf"><div class="k">Infrastructure</div><b>เว็บไซต์บนคลาวด์</b><p>หน้าร้านโหลดเร็ว ดูแลง่าย อัปเดตอัตโนมัติทุกครั้งที่แก้ไข</p></div>
+</div>
+</div></section>
+
+<section id="process"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">ขั้นตอนการทำงาน</span><h2>ชัดเจนทุกขั้น ตั้งแต่คุยครั้งแรกจนใช้งานจริง</h2></div>
+<ol class="steps">
+<li><b>คุยและดูงานจริง</b><p>ฟังปัญหา ดูขั้นตอนที่ทีมทำอยู่ และหาจุดที่คุ้มที่สุด ปรึกษาเบื้องต้นไม่มีค่าใช้จ่าย</p></li>
+<li><b>เสนอขอบเขตและราคา</b><p>สรุปสิ่งที่จะทำ ระยะเวลา และราคาคงที่เป็นเอกสาร ก่อนเริ่มงาน</p></li>
+<li><b>สร้างและทดสอบ</b><p>ให้ทดลองใช้เป็นระยะ ปรับตามความเห็นทีม ทดสอบกับข้อมูลจริงก่อนเปิดใช้</p></li>
+<li><b>ส่งมอบและดูแลต่อ</b><p>สอนทีม ส่งคู่มือ และมีที่ปรึกษาคอยดูแลเมื่อธุรกิจเปลี่ยน</p></li>
+</ol>
+</div></section>
+
+<section id="faq" style="padding-top:0"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">คำถามที่พบบ่อย</span><h2>ก่อนเริ่มงานกับเรา</h2></div>
+<div class="faq">
+<details><summary>บริษัทเล็ก มีพนักงานไม่กี่คน คุ้มไหม?</summary><p>คุ้มที่สุดสำหรับบริษัทเล็ก เพราะทุกชั่วโมงของทีมมีค่า เราเริ่มจากงานเดียวที่กินเวลามากที่สุด ใช้งบน้อย แล้ววัดผลก่อนตัดสินใจทำเพิ่ม</p></details>
+<details><summary>ต้องมีความรู้ด้าน IT หรือมีทีม IT ไหม?</summary><p>ไม่ต้อง เราดูแลส่วนเทคนิคทั้งหมด และสอนทีมให้ใช้งานในแบบที่คุ้นเคย เช่น สั่งงานผ่าน LINE หรือกรอกใน Google Sheets</p></details>
+<details><summary>ข้อมูลของบริษัทปลอดภัยไหม?</summary><p>ระบบทั้งหมดเปิดในบัญชีของบริษัทคุณ เราจำกัดสิทธิ์การเข้าถึงเท่าที่จำเป็น และส่งมอบสิทธิ์ทั้งหมดคืนเมื่อจบงาน เรายินดีเซ็นสัญญารักษาความลับ (NDA)</p></details>
+<details><summary>มีค่าใช้จ่ายรายเดือนอะไรบ้างหลังส่งมอบ?</summary><p>มีเฉพาะค่าบริการคลาวด์หรือ AI ที่คุณจ่ายตรงกับผู้ให้บริการ ซึ่งเราแจ้งประมาณการให้ก่อนเริ่มงาน บริการที่ปรึกษารายเดือนเป็นทางเลือก ไม่บังคับ</p></details>
+<details><summary>ถ้าระบบมีปัญหาหลังส่งมอบ ทำอย่างไร?</summary><p>ทุกงานมีระยะรับประกันแก้ไขข้อผิดพลาดหลังส่งมอบ ระบุไว้ในใบเสนอราคา หลังจากนั้นเลือกใช้บริการที่ปรึกษารายเดือน หรือแจ้งแก้เป็นครั้งได้</p></details>
+</div>
+</div></section>
+
+<section class="final" id="contact"><div class="wrap"><div class="box">
+<span class="eyebrow">เริ่มต้นวันนี้</span>
+<h2 style="margin-top:14px">เล่าปัญหาให้เราฟัง 30 นาที<br>แล้วรับแนวทางกลับไปฟรี</h2>
+<p>โทรหาเรา หรือฝากชื่อที่หน้าติดต่อ บอกสั้น ๆ ว่าธุรกิจทำอะไรและงานไหนที่อยากให้ง่ายขึ้น เราจะติดต่อกลับภายในวันทำการถัดไป</p>
+<div class="cta"><a class="btn gold" href="tel:+66989147999">โทร 098-914-7999</a><a class="btn line" href="/contact/">ช่องทางติดต่ออื่น</a></div>
+</div></div></section>
+</main>
+
+<footer class="ftr"><div class="wrap">
+<span>© <span id="yr">2026</span> PAVNO DIGITAL · PAVNO IT Solutions</span>
+<nav><a href="/">ร้านสมุดฝึกเด็ก</a><a href="/contact/">ติดต่อเรา</a><a href="/terms/">เงื่อนไขการใช้งาน</a><a href="tel:+66989147999">098-914-7999</a></nav>
+</div></footer>
+
+<script>
+(function(){
+  var b=document.querySelector('.menu-btn'),n=document.getElementById('nav');
+  b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'✕':'☰'});
+  n.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='☰'})});
+  document.getElementById('yr').textContent=new Date().getFullYear();
+})();
+</script>
+<script src="/assets/analytics-client.js?v=2" defer></script>
+</body></html>
