@@ -32,7 +32,7 @@
 <p style="margin-top:10px">สมุดฝึกอ่าน เขียน คิดเลข และระบายสี สำหรับเด็ก ไฟล์ PDF พิมพ์ได้ไม่จำกัดในบ้านและห้องเรียน ตัวการ์ตูนออกแบบใหม่ทั้งหมด</p>
 <div class="pay"><span>PromptPay</span><span>Visa / Mastercard</span><span>Apple Pay</span><span>Google Pay</span></div></div>
 <div><h4>สินค้า</h4><a href="${L('/books/?cat=lang')}">ภาษาไทย · อังกฤษ</a><a href="${L('/books/?cat=asia')}">ญี่ปุ่น · จีน</a><a href="${L('/books/?cat=math')}">คณิตศาสตร์</a><a href="${L('/books/?cat=color')}">ระบายสี</a><a href="/it/">บริการ IT สำหรับธุรกิจ</a><a href="/affiliate/">การตลาด Affiliate</a></div>
-<div><h4>ช่วยเหลือ</h4><a href="${L('/learn/#faq')}">คำถามที่พบบ่อย</a><a href="${L('/contact/')}">ติดต่อเรา · 098-914-7999</a><a href="${L('/refund/')}">นโยบายคืนเงิน</a><a href="${L('/terms/')}">เงื่อนไขการใช้งาน</a></div>
+<div><h4>ช่วยเหลือ</h4><a href="${L('/learn/#faq')}">คำถามที่พบบ่อย</a><a href="${L('/contact/')}">ติดต่อเรา · 063-993-6116</a><a href="${L('/refund/')}">นโยบายคืนเงิน</a><a href="${L('/terms/')}">เงื่อนไขการใช้งาน</a></div>
 <div class="copy">© ${new Date().getFullYear()} PAVNO DIGITAL · ชำระเงินปลอดภัยผ่าน Stripe · รับไฟล์ทางอีเมลภายใน 24 ชั่วโมง</div></div></footer>`;
   }
 
