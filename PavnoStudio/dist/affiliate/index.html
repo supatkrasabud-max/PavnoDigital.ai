@@ -1,0 +1,333 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PAVNO Affiliate | บริการการตลาด Affiliate บน Shopee, TikTok และ Facebook</title>
+<meta name="description" content="PAVNO Affiliate บริการการตลาด Affiliate ครบวงจรสำหรับแบรนด์และร้านค้า บน Shopee, TikTok Shop และ Facebook ดูแลโดยทีมงานในนามบริษัท วัดผลเป็นยอดขายจริง">
+<meta name="theme-color" content="#120d14">
+<meta property="og:title" content="PAVNO Affiliate | การตลาด Affiliate บน Shopee, TikTok และ Facebook"><meta property="og:description" content="ให้ครีเอเตอร์ช่วยขายสินค้าของคุณ จ่ายตามยอดขายจริง ดูแลครบโดยทีมงานในนามบริษัท"><meta property="og:type" content="website"><meta property="og:url" content="https://www.pavnodigital.com/affiliate/"><meta property="og:image" content="https://www.pavnodigital.com/assets/pavno-logo-tile.png">
+<link rel="canonical" href="https://www.pavnodigital.com/affiliate/">
+<link rel="icon" href="/assets/pavno-logo-tile.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#120d14;--bg2:#19121c;--card:#1f1723;--card2:#271c2c;--line:#3a2b40;--ink:#f6eff4;--muted:#b9a8b6;
+  --a1:#ff7a59;--a2:#ff3d7f;--a3:#ffc36b;--grad:linear-gradient(120deg,#ffc36b,#ff7a59 45%,#ff3d7f);
+  --paper:#fbf6f1;--paper-ink:#24182a;--paper-muted:#6b5a68;
+  --max:1160px;--r:18px;
+  --font:'Noto Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;--head:'Mitr','Noto Sans Thai',sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font:16px/1.7 var(--font);color:var(--ink);background:var(--bg);overflow-x:hidden}
+img,svg{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--a3);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--head);font-weight:500;line-height:1.25}
+h1{font-size:clamp(34px,5.4vw,60px)}h2{font-size:clamp(26px,3.4vw,40px)}h3{font-size:20px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--a1)}
+.eyebrow::before{content:"";width:28px;height:1px;background:currentColor}
+.lead{font-size:clamp(17px,1.6vw,19px);color:var(--muted)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:12px 26px;border-radius:999px;font-weight:600;border:1px solid transparent;transition:transform .2s,border-color .2s;cursor:pointer}
+.btn:hover{transform:translateY(-2px)}
+.btn.hot{background:var(--grad);color:#2a0d18}
+.btn.line{border-color:#4e3a55;color:var(--ink)}
+.btn.line:hover{border-color:var(--a1)}
+.btn.dark{background:var(--paper-ink);color:#fff}
+section{padding:96px 0;scroll-margin-top:70px}
+
+/* header */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(18,13,20,.86);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.hdr .wrap{display:flex;align-items:center;gap:18px;height:70px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--head);font-size:19px;letter-spacing:.04em}
+.logo img{width:36px;height:36px;border-radius:9px}
+.logo small{font-family:var(--font);font-size:11px;letter-spacing:.16em;color:var(--a1);border:1px solid #5a3330;border-radius:6px;padding:1px 7px}
+.nav{display:flex;gap:2px;margin-left:auto}
+.nav a{padding:8px 14px;border-radius:999px;font-size:15px;color:var(--muted)}
+.nav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.hdr .btn{min-height:42px;padding:8px 20px;font-size:15px}
+.menu-btn{display:none;margin-left:auto;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:20px}
+@media(max-width:900px){
+  .menu-btn{display:block}
+  .nav{position:absolute;top:100%;left:0;right:0;flex-direction:column;background:var(--bg2);padding:10px 20px 20px;border-bottom:1px solid var(--line);margin:0;visibility:hidden;opacity:0;transform:translateY(-8px);transition:.2s}
+  .nav.open{visibility:visible;opacity:1;transform:none}
+  .nav a{padding:14px 10px;font-size:17px;border-radius:10px}
+  .hdr .btn{display:none}
+}
+
+/* hero */
+.hero{position:relative;padding:88px 0 96px;overflow:hidden}
+.hero::before{content:"";position:absolute;right:-180px;top:-220px;width:720px;height:720px;background:radial-gradient(closest-side,rgba(255,61,127,.20),transparent);pointer-events:none}
+.hero::after{content:"";position:absolute;left:-240px;bottom:-320px;width:680px;height:680px;background:radial-gradient(closest-side,rgba(255,195,107,.12),transparent);pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero h1{margin:18px 0 20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{font-size:14px;font-weight:600;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.chip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+
+/* hero visual: affiliate funnel */
+.funnel{background:linear-gradient(180deg,#221827,#160f19);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.funnel .top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:16px}
+.funnel .top i{font-style:normal;color:var(--a3)}
+.creators{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cr{background:var(--card2);border:1px solid #3d2d44;border-radius:14px;padding:12px;text-align:center}
+.cr .av{width:44px;height:44px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;font-family:var(--head);font-size:16px;color:#2a0d18}
+.cr b{display:block;font-size:13px;font-weight:600}
+.cr span{font-size:12px;color:var(--muted)}
+.arrow{display:flex;justify-content:center;padding:10px 0}
+.arrow svg{width:22px;height:22px}
+.shop{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#3a1d2a,#271c2c);border:1px solid #5a3346;border-radius:14px;padding:14px 16px}
+.shop .ic{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--grad)}
+.shop .ic svg{width:22px;height:22px}
+.shop b{display:block;font-weight:600;font-size:15px}
+.shop span{font-size:13px;color:var(--muted)}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.meter div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.meter small{display:block;font-size:12px;color:var(--muted)}
+.meter b{font-size:14px;font-weight:600}
+
+/* platforms */
+.plats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.plat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:30px 28px;position:relative;overflow:hidden}
+.plat::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--c)}
+.plat .nm{display:flex;align-items:center;gap:10px;font-family:var(--head);font-size:22px;margin-bottom:10px}
+.plat .nm i{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.plat p{color:var(--muted);margin-bottom:16px}
+.plat ul{list-style:none;padding:16px 0 0;border-top:1px solid var(--line)}
+.plat li{position:relative;padding-left:22px;margin-bottom:8px;font-size:15px}
+.plat li::before{content:"";position:absolute;left:2px;top:.7em;width:8px;height:8px;border-radius:50%;background:var(--c)}
+
+/* services */
+.sec-head{max-width:720px;margin-bottom:48px}
+.sec-head h2{margin:14px 0 14px}
+.svcs{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.svc{display:flex;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.svc .n{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-family:var(--head);font-size:18px;background:#2e2034;color:var(--a3)}
+.svc h3{margin-bottom:6px;font-size:19px}
+.svc p{color:var(--muted);font-size:15px}
+
+/* models (paper) */
+.paper{background:var(--paper);color:var(--paper-ink)}
+.paper .eyebrow{color:#c2512f}
+.paper .lead,.paper p{color:var(--paper-muted)}
+.pkgs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.pkg{background:#fff;border:1px solid #eadfd6;border-radius:var(--r);padding:28px 24px;display:flex;flex-direction:column}
+.pkg .tag{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c2512f;margin-bottom:10px}
+.pkg h3{margin-bottom:8px;color:var(--paper-ink)}
+.pkg .for{font-size:14px;margin-bottom:18px}
+.pkg dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;padding:14px 0;border-top:1px solid #f0e6dc;border-bottom:1px solid #f0e6dc;margin-bottom:16px}
+.pkg dt{color:var(--paper-muted)}.pkg dd{margin:0;font-weight:600;text-align:right}
+.pkg ul{padding-left:18px;font-size:14px;color:var(--paper-muted);margin-bottom:22px}
+.pkg li{margin-bottom:6px}
+.pkg .btn{margin-top:auto;min-height:44px;font-size:15px}
+.pkg.star{background:var(--paper-ink);border-color:var(--paper-ink);color:#fff}
+.pkg.star h3{color:#fff}.pkg.star .tag{color:var(--a3)}
+.pkg.star p,.pkg.star ul,.pkg.star dt{color:#c9b8c6}
+.pkg.star dl{border-color:#3d2c44}
+.pkg.star .btn{background:var(--grad);color:#2a0d18}
+.note{margin-top:22px;font-size:14px}
+
+/* corporate */
+.split{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.points{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.point{border-top:1px solid var(--line);padding-top:18px}
+.point b{display:block;font-family:var(--head);font-weight:500;font-size:18px;margin-bottom:6px}
+.point p{color:var(--muted);font-size:15px}
+
+/* creators band */
+.band{background:linear-gradient(180deg,var(--bg2),var(--bg))}
+.band .box{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:44px}
+.band ul{list-style:none;padding:0}
+.band li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}
+.band li:last-child{border-bottom:0}
+.band li b{color:var(--a3);font-family:var(--head);font-weight:500;min-width:28px}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding:0}
+.steps li{list-style:none;padding:26px 22px 0 0;counter-increment:s}
+.steps{counter-reset:s}
+.steps li::before{content:"0" counter(s);display:block;font-family:var(--head);font-size:34px;margin-bottom:10px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;width:max-content}
+.steps b{display:block;font-weight:600;margin-bottom:6px;font-size:17px}
+.steps p{color:var(--muted);font-size:15px}
+
+/* faq */
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:20px 0}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px;font-weight:600;font-size:17px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--a1);font-size:22px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);margin-top:12px}
+
+/* cta */
+.final{padding:0 0 96px}
+.final .box{position:relative;overflow:hidden;border-radius:28px;padding:64px 48px;background:linear-gradient(135deg,#2b1830,#170f1a);border:1px solid #4a2c3a;text-align:center}
+.final .box::before{content:"";position:absolute;inset:auto -10% -60% -10%;height:300px;background:radial-gradient(closest-side,rgba(255,122,89,.22),transparent)}
+.final h2,.final p,.final .cta,.final .eyebrow{position:relative}
+.final h2{margin:14px 0}
+.final p{color:var(--muted);max-width:620px;margin:0 auto 28px}
+.final .cta{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+
+.ftr{border-top:1px solid rgba(255,255,255,.06);padding:36px 0;font-size:14px;color:var(--muted)}
+.ftr .wrap{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;justify-content:space-between}
+.ftr nav{display:flex;flex-wrap:wrap;gap:18px}
+.ftr a:hover{color:var(--ink)}
+
+@media(max-width:1000px){
+  .hero .wrap,.split,.band .box{grid-template-columns:1fr;gap:40px}
+  .plats{grid-template-columns:1fr}
+  .pkgs{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:10px 0}
+}
+@media(max-width:600px){
+  section{padding:68px 0}.hero{padding:56px 0 64px}
+  .svcs,.pkgs,.points,.steps{grid-template-columns:1fr}
+  .band .box{padding:28px 22px}
+  .final .box{padding:44px 22px}
+  .hero .cta .btn,.final .cta .btn{width:100%}
+  .cr{padding:10px 6px}.cr span{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+
+<header class="hdr"><div class="wrap">
+<a class="logo" href="/affiliate/"><img src="/assets/pavno-logo-tile.png" alt="" width="36" height="36">PAVNO <small>AFFILIATE</small></a>
+<button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="เปิดเมนู">☰</button>
+<nav class="nav" id="nav"><a href="#platforms">แพลตฟอร์ม</a><a href="#services">บริการ</a><a href="#packages">แพ็กเกจ</a><a href="#creators">ครีเอเตอร์</a><a href="#faq">คำถาม</a><a href="/it/">บริการ IT</a></nav>
+<a class="btn hot" href="#contact">ปรึกษาฟรี</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+<div>
+<span class="eyebrow">PAVNO DIGITAL · AFFILIATE MARKETING</span>
+<h1>ให้ครีเอเตอร์ช่วย<br><span class="grad">ขายสินค้าของคุณ</span><br>จ่ายเมื่อขายได้</h1>
+<p class="lead">บริการการตลาด Affiliate ครบวงจรในนามบริษัท ตั้งแต่วางระบบค่าคอมมิชชัน หาครีเอเตอร์ ส่งสินค้าตัวอย่าง ทำคอนเทนต์ ไปจนถึงรายงานยอดขาย จ่ายค่าการตลาดตามยอดขายที่เกิดขึ้นจริง</p>
+<div class="chips"><span class="chip"><i style="background:#ff6a3d"></i>Shopee Affiliate</span><span class="chip"><i style="background:#ff3d7f"></i>TikTok Shop Affiliate</span><span class="chip"><i style="background:#4c8dff"></i>Facebook</span></div>
+<div class="cta"><a class="btn hot" href="#contact">ปรึกษาฟรี วางแผนให้</a><a class="btn line" href="#packages">ดูแพ็กเกจ</a></div>
+</div>
+<div class="funnel" aria-label="ภาพอธิบาย: ครีเอเตอร์หลายคนทำคอนเทนต์ พาลูกค้าไปซื้อที่ร้านของคุณ">
+<div class="top"><span>ระบบ Affiliate ทำงานอย่างไร</span><i>● จ่ายเมื่อขายได้</i></div>
+<div class="creators">
+<div class="cr"><div class="av" style="background:#ffc36b">รีวิว</div><b>สายรีวิว</b><span>คลิปสั้น TikTok</span></div>
+<div class="cr"><div class="av" style="background:#ff9a7a">แม่</div><b>สายแม่และเด็ก</b><span>เพจ Facebook</span></div>
+<div class="cr"><div class="av" style="background:#ff7aa6">LIVE</div><b>สายไลฟ์ขาย</b><span>Shopee Live</span></div>
+</div>
+<div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#ff7a59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M5 13l7 7 7-7"/></svg></div>
+<div class="shop"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2a0d18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></div><div><b>ลูกค้ากดลิงก์ ซื้อที่ร้านของคุณ</b><span>ครีเอเตอร์ได้ค่าคอมฯ เมื่อขายได้เท่านั้น</span></div></div>
+<div class="meter"><div><small>ติดตามผล</small><b>ทุกลิงก์</b></div><div><small>รายงาน</small><b>ทุกสัปดาห์</b></div><div><small>จ่ายตาม</small><b>ยอดขาย</b></div></div>
+</div>
+</div></section>
+
+<section id="platforms" style="padding-top:40px"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">แพลตฟอร์มที่เราดูแล</span><h2>ครบทั้งสามช่องทางที่คนไทยซื้อของมากที่สุด</h2><p class="lead">แต่ละแพลตฟอร์มมีกติกาและพฤติกรรมลูกค้าต่างกัน เราวางแผนแยกให้เหมาะกับแต่ละที่ แล้วรวมผลไว้ในรายงานเดียว</p></div>
+<div class="plats">
+<article class="plat" style="--c:#ff6a3d"><div class="nm"><i></i>Shopee</div><p>ลูกค้าพร้อมซื้อ เน้นราคา โปรโมชัน และรีวิว</p>
+<ul><li>ตั้งค่าคอมมิชชันพิเศษร้านค้า (Seller Commission)</li><li>หาครีเอเตอร์และนักไลฟ์ Shopee Live</li><li>วางแผนแคมเปญตามวันเซลใหญ่</li></ul></article>
+<article class="plat" style="--c:#ff3d7f"><div class="nm"><i></i>TikTok Shop</div><p>ยอดขายเกิดจากคลิปสั้นและไลฟ์ที่ดูแล้วอยากซื้อทันที</p>
+<ul><li>เปิดแผน Affiliate และเชิญครีเอเตอร์</li><li>ส่งสินค้าตัวอย่างพร้อมบรีฟคอนเทนต์</li><li>ต่อยอดคลิปที่ขายดีด้วยโฆษณา</li></ul></article>
+<article class="plat" style="--c:#4c8dff"><div class="nm"><i></i>Facebook</div><p>เข้าถึงกลุ่มคุณแม่ ครอบครัว และกลุ่มความสนใจเฉพาะ</p>
+<ul><li>ร่วมงานกับเพจและกลุ่มที่ตรงกลุ่มเป้าหมาย</li><li>คอนเทนต์รีวิวและโพสต์พร้อมลิงก์สินค้า</li><li>โฆษณาเสริมจากโพสต์ที่ได้ผลดี</li></ul></article>
+</div>
+</div></section>
+
+<section id="services" style="padding-top:0"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">บริการของเรา</span><h2>เราดูแลให้ทั้งระบบ คุณโฟกัสที่สินค้า</h2></div>
+<div class="svcs">
+<div class="svc"><div class="n">01</div><div><h3>วางกลยุทธ์และค่าคอมมิชชัน</h3><p>เลือกสินค้าที่จะดัน ตั้งอัตราค่าคอมฯ ที่ครีเอเตอร์อยากขาย แต่ร้านยังมีกำไร</p></div></div>
+<div class="svc"><div class="n">02</div><div><h3>หาและคัดเลือกครีเอเตอร์</h3><p>คัดคนที่ผู้ติดตามตรงกลุ่มลูกค้าจริง ติดต่อ เจรจา และดูแลความสัมพันธ์ระยะยาว</p></div></div>
+<div class="svc"><div class="n">03</div><div><h3>สินค้าตัวอย่างและบรีฟคอนเทนต์</h3><p>จัดส่งสินค้าตัวอย่าง เขียนบรีฟจุดขาย และตรวจคอนเทนต์ก่อนเผยแพร่</p></div></div>
+<div class="svc"><div class="n">04</div><div><h3>ผลิตคอนเทนต์โดยทีมเรา</h3><p>ทีมของบริษัททำคลิปรีวิวและไลฟ์ขายเองบนช่องทางของบริษัท สำหรับแบรนด์ที่ต้องการความเร็ว</p></div></div>
+<div class="svc"><div class="n">05</div><div><h3>โฆษณาต่อยอดคอนเทนต์ที่ขายได้</h3><p>นำคลิปที่ขายดีที่สุดไปยิงโฆษณาต่อ ใช้งบเฉพาะกับสิ่งที่พิสูจน์แล้วว่าได้ผล</p></div></div>
+<div class="svc"><div class="n">06</div><div><h3>รายงานยอดขายและค่าคอมฯ</h3><p>สรุปยอดขาย ครีเอเตอร์ที่ทำผลงานดี และต้นทุนต่อยอดขาย ส่งให้ทุกสัปดาห์</p></div></div>
+</div>
+</div></section>
+
+<section class="paper" id="packages"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">แพ็กเกจบริการ</span><h2>เลือกรูปแบบที่เหมาะกับธุรกิจคุณ</h2><p class="lead">ทุกแพ็กเกจทำสัญญาในนามบริษัท มีขอบเขตงานและเป้าหมายชัดเจน แจ้งราคาเป็นลายลักษณ์อักษรก่อนเริ่มงาน</p></div>
+<div class="pkgs">
+<article class="pkg"><div class="tag">เริ่มต้น</div><h3>Affiliate Starter</h3><p class="for">ร้านที่เพิ่งเริ่มทำ Affiliate บน 1 แพลตฟอร์ม</p>
+<dl><dt>แพลตฟอร์ม</dt><dd>1 ช่องทาง</dd><dt>สัญญา</dt><dd>รายเดือน</dd></dl>
+<ul><li>วางแผนและตั้งค่าคอมมิชชัน</li><li>หาครีเอเตอร์กลุ่มแรก</li><li>รายงานสรุปรายเดือน</li></ul>
+<a class="btn dark" href="#contact">สอบถามราคา</a></article>
+<article class="pkg star"><div class="tag">แนะนำ</div><h3>Growth</h3><p class="for">แบรนด์ที่ต้องการขยายยอดขายหลายช่องทาง</p>
+<dl><dt>แพลตฟอร์ม</dt><dd>2–3 ช่องทาง</dd><dt>สัญญา</dt><dd>รายเดือน</dd></dl>
+<ul><li>ดูแลครีเอเตอร์ต่อเนื่องทุกเดือน</li><li>ส่งตัวอย่างและบรีฟคอนเทนต์</li><li>โฆษณาต่อยอดคลิปที่ขายดี</li><li>รายงานทุกสัปดาห์</li></ul>
+<a class="btn" href="#contact">สอบถามราคา</a></article>
+<article class="pkg"><div class="tag">ครบวงจร</div><h3>Full Service</h3><p class="for">ให้ทีมเราดูแลการขายออนไลน์ให้ทั้งหมด</p>
+<dl><dt>แพลตฟอร์ม</dt><dd>ทุกช่องทาง</dd><dt>สัญญา</dt><dd>รายเดือน</dd></dl>
+<ul><li>ทุกอย่างในแพ็กเกจ Growth</li><li>ทีมเราทำคลิปและไลฟ์ขายเอง</li><li>วางแผนแคมเปญวันเซลใหญ่</li></ul>
+<a class="btn dark" href="#contact">สอบถามราคา</a></article>
+<article class="pkg"><div class="tag">จ่ายตามผล</div><h3>Performance</h3><p class="for">ค่าบริการผูกกับยอดขายที่เกิดขึ้นจริง</p>
+<dl><dt>ค่าบริการ</dt><dd>% จากยอดขาย</dd><dt>เงื่อนไข</dt><dd>คัดเลือกสินค้า</dd></dl>
+<ul><li>เหมาะกับสินค้าที่ขายดีอยู่แล้ว</li><li>ทีมเราทำคอนเทนต์ขายเอง</li><li>พิจารณาสินค้าเป็นรายกรณี</li></ul>
+<a class="btn dark" href="#contact">สอบถามเงื่อนไข</a></article>
+</div>
+<p class="note">ค่าคอมมิชชันที่ครีเอเตอร์ได้รับ แพลตฟอร์มหักจากยอดขายและจ่ายให้ครีเอเตอร์โดยตรงตามกติกาของแต่ละแพลตฟอร์ม ส่วนงบโฆษณาจ่ายตรงกับแพลตฟอร์มในบัญชีของร้านคุณ</p>
+</div></section>
+
+<section><div class="wrap split">
+<div class="sec-head" style="margin-bottom:0"><span class="eyebrow">ทำงานแบบบริษัท</span><h2>มืออาชีพ โปร่งใส ตรวจสอบได้</h2><p class="lead">ต่างจากการจ้างครีเอเตอร์ทีละคน เราทำงานเป็นทีมในนามบริษัท มีสัญญา มีผู้รับผิดชอบ และมีตัวเลขยืนยันทุกขั้น</p></div>
+<div class="points">
+<div class="point"><b>สัญญาและเอกสารในนามบริษัท</b><p>ว่าจ้างแบบนิติบุคคลต่อนิติบุคคล ขอบเขตงาน ค่าบริการ และเป้าหมายระบุชัดในสัญญา</p></div>
+<div class="point"><b>บัญชีเป็นของร้านคุณ</b><p>แผน Affiliate และบัญชีโฆษณาเปิดในชื่อร้านคุณ เราได้สิทธิ์เข้าดูแลเท่าที่จำเป็น</p></div>
+<div class="point"><b>ทำตามกติกาแพลตฟอร์ม</b><p>คอนเทนต์ทุกชิ้นระบุว่าเป็นการโฆษณาหรือมีค่าคอมฯ ไม่ใช้รีวิวปลอม ไม่อ้างสรรพคุณเกินจริง</p></div>
+<div class="point"><b>ตัวเลขจริงจากแพลตฟอร์ม</b><p>รายงานดึงจากหลังร้าน Shopee, TikTok Shop และ Facebook ตรวจสอบย้อนหลังได้ทุกรายการ</p></div>
+</div>
+</div></section>
+
+<section class="band" id="creators"><div class="wrap"><div class="box">
+<div><span class="eyebrow">สำหรับครีเอเตอร์</span><h2 style="margin:14px 0 14px">ร่วมเป็นครีเอเตอร์ในเครือข่ายของเรา</h2><p class="lead">ทำคอนเทนต์ขายสินค้าจากแบรนด์ที่เราคัดมาแล้ว มีบรีฟชัดเจน และทีมงานคอยช่วย เหมาะกับทั้งมือใหม่และครีเอเตอร์ที่มีผู้ติดตามแล้ว</p>
+<div class="cta" style="margin-top:24px"><a class="btn line" href="/contact/">สมัครร่วมงาน</a></div></div>
+<ul>
+<li><b>01</b><span>ได้สินค้าตัวอย่างจากแบรนด์โดยตรง ไม่ต้องลงทุนซื้อเอง</span></li>
+<li><b>02</b><span>มีบรีฟจุดขายและตัวอย่างคอนเทนต์ที่ขายได้จริง</span></li>
+<li><b>03</b><span>ได้รับค่าคอมมิชชันผ่านระบบของแพลตฟอร์มโดยตรง</span></li>
+<li><b>04</b><span>ทำผลงานดีมีโอกาสรับงานรีวิวแบบจ้างเพิ่ม</span></li>
+</ul>
+</div></div></section>
+
+<section id="process"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">ขั้นตอนการทำงาน</span><h2>เริ่มขายผ่าน Affiliate ได้ใน 4 ขั้น</h2></div>
+<ol class="steps">
+<li><b>คุยและดูสินค้า</b><p>ดูสินค้า ราคา กำไร และร้านปัจจุบัน ประเมินว่าเหมาะกับแพลตฟอร์มไหน ปรึกษาฟรี</p></li>
+<li><b>เสนอแผนและสัญญา</b><p>แผนสินค้า อัตราค่าคอมฯ จำนวนครีเอเตอร์ เป้าหมาย และค่าบริการ เป็นเอกสาร</p></li>
+<li><b>เปิดแคมเปญ</b><p>ตั้งค่าหลังร้าน หาครีเอเตอร์ ส่งตัวอย่าง และเริ่มปล่อยคอนเทนต์</p></li>
+<li><b>วัดผลและขยาย</b><p>รายงานทุกสัปดาห์ เพิ่มงบกับสิ่งที่ขายได้ ตัดสิ่งที่ไม่ได้ผล</p></li>
+</ol>
+</div></section>
+
+<section id="faq" style="padding-top:0"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">คำถามที่พบบ่อย</span><h2>ก่อนเริ่มทำ Affiliate กับเรา</h2></div>
+<div class="faq">
+<details><summary>Affiliate ต่างจากการจ้างรีวิวทั่วไปอย่างไร?</summary><p>การจ้างรีวิวจ่ายเงินก่อนโดยไม่รู้ว่าจะขายได้หรือไม่ ส่วน Affiliate ครีเอเตอร์ได้ค่าคอมมิชชันเมื่อมีคนซื้อผ่านลิงก์เท่านั้น ต้นทุนการตลาดจึงผูกกับยอดขายจริง</p></details>
+<details><summary>ร้านเล็กหรือแบรนด์ใหม่ทำได้ไหม?</summary><p>ทำได้ เราแนะนำให้เริ่มจากแพ็กเกจ Starter บนแพลตฟอร์มเดียว เลือกสินค้าที่มีกำไรพอสำหรับค่าคอมมิชชัน แล้วค่อยขยายเมื่อเห็นผล</p></details>
+<details><summary>ต้องเตรียมอะไรบ้าง?</summary><p>ร้านค้าบน Shopee หรือ TikTok Shop ที่เปิดใช้งานแล้ว สินค้าสำหรับส่งตัวอย่างให้ครีเอเตอร์ และข้อมูลจุดขายของสินค้า ถ้ายังไม่มีร้าน เราช่วยแนะนำการเปิดร้านได้</p></details>
+<details><summary>นานแค่ไหนถึงจะเห็นยอดขาย?</summary><p>ขึ้นกับสินค้าและแพลตฟอร์ม เราไม่รับประกันยอดขาย แต่จะแจ้งตัวเลขจริงทุกสัปดาห์ และปรับแผนจากข้อมูล เพื่อให้คุณตัดสินใจได้ว่าจะขยายหรือหยุด</p></details>
+<details><summary>รับสินค้าทุกประเภทไหม?</summary><p>เราไม่รับสินค้าที่ผิดกฎหมาย ผิดกติกาแพลตฟอร์ม หรือต้องอ้างสรรพคุณเกินจริง เช่น อาหารเสริมที่ไม่มีเลขทะเบียน สินค้าทุกชิ้นต้องผ่านการพิจารณาก่อนรับงาน</p></details>
+</div>
+</div></section>
+
+<section class="final" id="contact"><div class="wrap"><div class="box">
+<span class="eyebrow">เริ่มต้นวันนี้</span>
+<h2>ส่งสินค้าของคุณมาให้เราดู<br>รับแผน Affiliate กลับไปฟรี</h2>
+<p>โทรหาเรา บอกชื่อร้าน สินค้าที่อยากขาย และแพลตฟอร์มที่ใช้อยู่ เราจะประเมินและเสนอแนวทางที่เหมาะกับร้านคุณ</p>
+<div class="cta"><a class="btn hot" href="tel:+66989147999">โทร 098-914-7999</a><a class="btn line" href="/contact/">ช่องทางติดต่ออื่น</a></div>
+</div></div></section>
+</main>
+
+<footer class="ftr"><div class="wrap">
+<span>© <span id="yr">2026</span> PAVNO DIGITAL · PAVNO Affiliate</span>
+<nav><a href="/">ร้านสมุดฝึกเด็ก</a><a href="/it/">บริการ IT</a><a href="/contact/">ติดต่อเรา</a><a href="/terms/">เงื่อนไขการใช้งาน</a><a href="tel:+66989147999">098-914-7999</a></nav>
+</div></footer>
+
+<script>
+(function(){
+  var b=document.querySelector('.menu-btn'),n=document.getElementById('nav');
+  b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'✕':'☰'});
+  n.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='☰'})});
+  document.getElementById('yr').textContent=new Date().getFullYear();
+})();
+</script>
+<script src="/assets/analytics-client.js?v=2" defer></script>
+</body></html>
