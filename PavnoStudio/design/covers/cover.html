@@ -1,0 +1,84 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<!-- แม่แบบปกซีรีส์ PAVNO Learn: เปิดด้วย ?id=<product id> แล้ว Chrome headless ถ่ายภาพ 580x820 (ดู scripts/build-covers.ps1) -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Noto+Sans+Thai:wght@400;600;700&family=Poppins:wght@500;700;800&family=Noto+Sans+JP:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=block" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:580px;height:820px;overflow:hidden;background:#fff}
+body{font-family:'Noto Sans Thai','Poppins',sans-serif;color:#1d2433}
+.cv{position:relative;width:580px;height:820px;overflow:hidden;background:#fffaf3}
+.top{position:absolute;inset:0 0 auto 0;height:520px;background:linear-gradient(160deg,var(--a) 0%,var(--b) 100%);border-radius:0 0 46% 46% / 0 0 70px 70px;overflow:hidden}
+.pat{position:absolute;inset:0;opacity:.13;font:700 46px 'Poppins','Noto Sans Thai','Noto Sans JP',sans-serif;color:#fff;line-height:80px;letter-spacing:34px;padding:10px 0 0 14px;word-break:break-all;transform:rotate(-8deg) scale(1.2);transform-origin:center}
+.bar{position:absolute;top:24px;left:26px;right:26px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:9px;color:#fff;font:600 15px 'Poppins';letter-spacing:3px}
+.brand img{width:34px;height:34px;border-radius:9px;box-shadow:0 2px 6px #0002}
+.vol{background:#fff;color:var(--d);font:700 13px 'Poppins';padding:6px 13px;border-radius:99px;letter-spacing:1px;box-shadow:0 3px 8px #0002}
+.vol b{font-family:'Noto Sans Thai';font-weight:700}
+.hero{position:absolute;top:82px;left:0;right:0;text-align:center;color:#fff}
+.cat{display:inline-block;background:#ffffff2e;border:1.5px solid #ffffff70;font:500 15px 'Mitr';padding:4px 16px;border-radius:99px;margin-bottom:6px}
+.big{font:800 var(--bs,150px)/1 var(--bf,'Poppins'),'Mitr',sans-serif;text-shadow:0 6px 0 #0000001c;letter-spacing:var(--ls,0);margin:6px 0 2px}
+.t1{font:600 var(--ts,40px)/1.15 'Mitr';text-shadow:0 3px 0 #00000014}
+.big.cjk{line-height:1.22;margin:2px 0 6px}
+.syms{display:flex;justify-content:center;gap:12px;margin:14px 0 10px}
+.sym{width:var(--sz,112px);height:var(--sz,112px);border-radius:50%;background:#fff;color:var(--b);display:grid;place-items:center;font:800 calc(var(--sz,112px)*.62)/1 'Poppins';box-shadow:0 6px 0 #00000022}
+.num{font:800 92px/1 'Poppins';text-shadow:0 6px 0 #0000001c;margin-top:4px}
+.num small{font:600 40px 'Mitr';margin-left:8px}
+.en{font:500 15px 'Poppins';opacity:.92;margin-top:8px;letter-spacing:.3px}
+.mas{position:absolute;top:418px;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;gap:0}
+.mas img{width:150px;height:150px;filter:drop-shadow(0 6px 6px #0002)}
+.mas img:nth-child(2){width:176px;height:176px;margin:0 -14px}
+.badges{position:absolute;top:612px;left:12px;right:12px;display:flex;justify-content:center;gap:6px;flex-wrap:nowrap}
+.badge{white-space:nowrap;background:#fff;border:2px solid var(--l);color:#1d2433;font:600 13px 'Noto Sans Thai';padding:6px 9px 6px 7px;border-radius:14px;display:flex;align-items:center;gap:6px;box-shadow:0 3px 0 var(--l)}
+.badge i{font-style:normal;width:19px;height:19px;font-size:11px !important;border-radius:50%;background:var(--a);color:#fff;font:700 13px 'Poppins';display:grid;place-items:center}
+.name{position:absolute;top:684px;left:56px;right:56px;font:500 15px 'Mitr';color:#6b7280;display:flex;gap:8px;align-items:flex-end}
+.name span{flex:1;border-bottom:2px dashed #cfd4dc;height:20px}
+.foot{position:absolute;left:0;right:0;bottom:0;height:72px;background:var(--d);color:#fff;display:flex;align-items:center;justify-content:center;gap:16px;font:500 15px 'Mitr'}
+.foot b{font:700 15px 'Poppins'}
+.foot .dot{width:5px;height:5px;border-radius:50%;background:#ffffff80}
+</style></head><body>
+<div class="cv" id="cv"></div>
+<script>
+const M='../../dist/assets/mascots/';
+// a/b = ไล่สีพื้น, d = สีเข้ม, l = สีอ่อนขอบป้าย
+const C={
+ thai:{a:'#ff8a5b',b:'#ff5f6d',d:'#c63b3b',l:'#ffd3c4'},
+ eng:{a:'#4aa3ff',b:'#3b6cf6',d:'#2747b8',l:'#cfe1ff'},
+ jp:{a:'#ff8fb6',b:'#ef5d93',d:'#bf3a6e',l:'#ffd6e5'},
+ kanji:{a:'#e0607e',b:'#a8376b',d:'#7e2350',l:'#f6cbd8'},
+ cn:{a:'#f2483b',b:'#c8202a',d:'#8f1119',l:'#ffd27a'},
+ add:{a:'#3fcf7f',b:'#1fa463',d:'#127a46',l:'#c6f0d8'},
+ sub:{a:'#2ccfc0',b:'#119c9a',d:'#0b706f',l:'#c2efe9'},
+ mul:{a:'#8bd14a',b:'#4ea52f',d:'#357a1d',l:'#dcf2c6'},
+ div:{a:'#38b98a',b:'#1d7f6a',d:'#135c4c',l:'#c5ebdc'},
+ bundle:{a:'#2fc27a',b:'#0f8a8a',d:'#0b5f60',l:'#c6efe0'},
+ color:{a:'#ffb347',b:'#ff5f9e',d:'#8b3fd0',l:'#ffe0b8'}
+};
+const P={
+ 'thai-abc':{n:'01',c:'thai',cat:'ภาษาไทย',big:'ก - ฮ',bf:"'Mitr'",bs:'150px',t:'ฝึกเขียนพยัญชนะ มีรูปภาพ',ts:'34px',en:'Thai Alphabet Tracing Workbook',pat:'กขคงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ',m:['elephant','cat','duck'],bd:['44 ตัว ตัวละ 1 หน้า','ภาพ + คำศัพท์ 2 ภาษา','ลากเส้น → เขียนเอง'],f:['PDF','54 หน้า','A4','อายุ 4–7 ปี']},
+ 'abc-tracing':{n:'02',c:'eng',cat:'ภาษาอังกฤษ',big:'ABC',bs:'160px',ls:'4px',t:'ฝึกเขียน A–Z มีรูปภาพ',ts:'34px',en:'ABC Tracing Picture Workbook',pat:'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz',m:['owl','puppy','fish'],bd:['พิมพ์ใหญ่ + พิมพ์เล็ก','ภาพทุกตัวอักษร','A4 + US Letter'],f:['PDF','36 หน้า','A4 / Letter','อายุ 3–6 ปี']},
+ 'hiragana':{n:'03',c:'jp',cat:'ภาษาญี่ปุ่น',big:'あいう',bf:"'Noto Sans JP'",bs:'118px',t:'ฝึกเขียนฮิรางานะ 46 ตัว',ts:'34px',en:'Hiragana Writing Practice',pat:'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん',m:['penguin','bunny','octopus'],bd:['คำอ่านไทย + โรมาจิ','ภาพประกอบทุกตัว','มีแบบทดสอบ'],f:['PDF','59 หน้า','A4','เริ่มต้น 6 ปีขึ้นไป']},
+ 'kanji-g1':{n:'04',c:'kanji',cat:'ภาษาญี่ปุ่น',big:'漢字',bf:"'Noto Sans JP'",bs:'124px',ls:'6px',t:'คันจิ ป.1 ครบ 80 ตัว',ts:'36px',en:'Japanese Kanji · Grade 1',pat:'一右雨円王音下火花貝学気九休玉金空月犬見五口校左三山子四糸字耳七車手十出女小上森人水正生青夕石赤千川先早草足村大男竹中虫町天田土二日入年白八百文木本名目立力林六',m:['robot','cat','snail'],bd:['คำอ่านคุง / อง','ลำดับขีดทุกตัว','คำศัพท์ผสม'],f:['PDF','47 หน้า','A4','เริ่มต้น 7 ปีขึ้นไป']},
+ 'chinese-60':{n:'05',c:'cn',cat:'ภาษาจีน',big:'汉字',bf:"'Noto Sans SC'",bs:'124px',ls:'6px',t:'อักษรจีนพื้นฐาน 60 ตัว',ts:'34px',en:'Basic Chinese Characters',pat:'人口大小山水火木日月上下中天手心目耳田土马牛羊鱼鸟花草云雨风',m:['bear','lion','dino'],bd:['พินอิน + คำอ่านไทย','ตาราง 米 ฝึกเขียน','คำศัพท์ผสม'],f:['PDF','37 หน้า','A4','เริ่มต้น 6 ปีขึ้นไป']},
+ 'math-add':{n:'06',c:'add',cat:'คณิตศาสตร์',sym:['+'],num:'2,000',t:'บวกเลข',ts:'46px',en:'Addition Practice · 2,000 Problems',pat:'1+2 3+4 5+6 7+8 9+1 2+3 4+5 6+7 8+9 ',m:['bunny','bear','cat'],bd:['ง่าย → ยาก 6 ระดับ','โจทย์ 3 แบบ','มีเฉลย + เกียรติบัตร'],f:['PDF','25 หน้า','A4','ป.1–ป.3']},
+ 'math-sub':{n:'07',c:'sub',cat:'คณิตศาสตร์',sym:['−'],num:'2,000',t:'ลบเลข',ts:'46px',en:'Subtraction Practice · 2,000 Problems',pat:'9-1 8-2 7-3 6-4 5-1 9-5 8-6 7-2 ',m:['frog','pig','turtle'],bd:['ลบมีการยืม','โจทย์ 3 แบบ','มีเฉลย + เกียรติบัตร'],f:['PDF','25 หน้า','A4','ป.1–ป.3']},
+ 'math-mul':{n:'08',c:'mul',cat:'คณิตศาสตร์',sym:['×'],num:'2,000',t:'คูณเลข',ts:'46px',en:'Multiplication Practice · 2,000 Problems',pat:'2×3 4×5 6×7 8×9 3×4 5×6 7×8 9×2 ',m:['lion','elephant','duck'],bd:['สูตรคูณแม่ 2–12','คูณ 2 หลัก','มีเฉลย + เกียรติบัตร'],f:['PDF','25 หน้า','A4','ป.2–ป.4']},
+ 'math-div':{n:'09',c:'div',cat:'คณิตศาสตร์',sym:['÷'],num:'2,000',t:'หารเลข',ts:'46px',en:'Division Practice · 2,000 Problems',pat:'8÷2 9÷3 6÷2 12÷4 15÷5 ',m:['owl','whale','puppy'],bd:['หาร 2–12','ทุกข้อหารลงตัว','มีเฉลย + เกียรติบัตร'],f:['PDF','25 หน้า','A4','ป.3–ป.5']},
+ 'math-bundle':{n:'SET',c:'bundle',cat:'ชุดรวมคุ้มที่สุด',sym:['+','−','×','÷'],sz:'78px',num:'8,000',t:'คณิตชุดรวม 4 เล่ม',ts:'40px',en:'Math Practice Bundle · 4 Books',pat:'+ − × ÷ ',m:['rocket','robot','unicorn'],bd:['ครบ 4 เล่ม','100 หน้า','คุ้มกว่าแยก 147 บาท'],f:['PDF','100 หน้า','A4','ป.1–ป.6']},
+ 'coloring':{n:'10',c:'color',cat:'ระบายสี',big:'Color!',bs:'118px',t:'สมุดระบายสีการ์ตูน 24 ตัว',ts:'34px',en:'Cute Coloring Book · 24 Characters',pat:'★ ♥ ● ✿ ★ ♥ ● ✿ ',m:['unicorn','butterfly','cupcake'],bd:['ตัวการ์ตูนออกแบบใหม่','เส้นหนา ระบายง่าย','มีตัวอย่างสี'],f:['PDF','28 หน้า','A4 / Letter','อายุ 3–8 ปี']}
+};
+const id=new URLSearchParams(location.search).get('id')||'thai-abc';
+const p=P[id],c=C[p.c];
+const has=new Set(['bear','bunny','butterfly','car','cat','cupcake','dino','duck','elephant','fish','frog','house','lion','octopus','owl','penguin','pig','puppy','robot','rocket','snail','turtle','unicorn','whale']);
+const ms=p.m.map(x=>has.has(x)?x:'bear');
+const cv=document.getElementById('cv');
+for(const k in c)cv.style.setProperty('--'+k,c[k]);
+cv.style.setProperty('--bs',p.bs);if(p.bf)cv.style.setProperty('--bf',p.bf);if(p.ls)cv.style.setProperty('--ls',p.ls);cv.style.setProperty('--ts',p.ts);
+const coloring=p.c==='color'?';background:linear-gradient(160deg,#ffb347 0%,#ff6f91 45%,#9b5de5 100%)':'';
+cv.innerHTML=`<div class="top" style="${coloring}"><div class="pat">${p.pat.repeat(6)}</div></div>
+<div class="bar"><div class="brand"><img src="../../dist/assets/pavno-logo-tile.png" alt="">PAVNO LEARN</div><div class="vol">${p.n==='SET'?'<b>ชุดรวม</b>':'<b>เล่ม</b> '+p.n}</div></div>
+<div class="hero"><div class="cat">${p.cat}</div>${p.sym?`<div class="syms" style="--sz:${p.sz||'96px'}">${p.sym.map(s=>`<div class="sym">${s}</div>`).join("")}</div>`:`<div class="big${/Noto/.test(p.bf||"")?" cjk":""}">${p.big}</div>`}<div class="t1">${p.t}</div>${p.num?`<div class="num">${p.num}<small>ข้อ</small></div>`:""}<div class="en">${p.en}</div></div>
+<div class="mas">${ms.map(x=>`<img src="${M}${x}.svg" alt="">`).join('')}</div>
+<div class="badges">${p.bd.map((b,i)=>`<div class="badge"><i>${i+1}</i>${b}</div>`).join('')}</div>
+<div class="name">ชื่อ / Name<span></span></div>
+<div class="foot">${p.f.map((x,i)=>(i?'<span class="dot"></span>':'')+(i===0?'<b>'+x+'</b>':x)).join('')}</div>`;
+</script></body></html>
