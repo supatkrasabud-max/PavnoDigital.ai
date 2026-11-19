@@ -74,7 +74,7 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
                                       recorded_by="Stripe", ref=obj.get("id", ""), channel="เว็บ PAVNO")
         except ValueError as err:  # ซ้ำ (Stripe ส่งซ้ำได้)
             return JSONResponse({"skipped": str(err)})
-        target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID
+        target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID.split(",")[0].strip()
         if cfg.NOTIFY_EACH_SALE and target:
             line.push(target, f"Yuki: มียอดขายใหม่ {baht(e.amount)} ({category}) บันทึกแล้วค่ะ")
         return JSONResponse({"recorded": e.id})
@@ -84,7 +84,7 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
             if not cfg.CRON_SECRET or request.query_params.get("key") != cfg.CRON_SECRET:
                 return PlainTextResponse("forbidden", status_code=403)
             text = team.report(period, title)
-            target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID  # กลุ่มบริษัท หรือแชต 1:1 กับ CEO
+            target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID.split(",")[0].strip()  # กลุ่มบริษัท หรือแชต 1:1 กับ CEO
             if target:
                 line.push(target, "Yuki: " + text)
             return PlainTextResponse(text)

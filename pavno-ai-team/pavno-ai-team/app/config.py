@@ -12,7 +12,7 @@ class Settings:
     LINE_CHANNEL_ACCESS_TOKEN = _get("LINE_CHANNEL_ACCESS_TOKEN")
     # กลุ่ม LINE ที่ใช้ประชุม (พิมพ์ "groupid" ในกลุ่มเพื่อดูค่า)
     LINE_GROUP_ID = _get("LINE_GROUP_ID")
-    # LINE user id ของ CEO (พิมพ์ "myid" เพื่อดูค่า) — มีสิทธิ์อนุมัติงบ/บันทึกเงินทุน
+    # LINE user id ของ CEO (พิมพ์ "myid" เพื่อดูค่า) ใส่ได้หลายเครื่องคั่นด้วย , รายงานส่งไปเครื่องแรก — มีสิทธิ์อนุมัติงบ/บันทึกเงินทุน
     CEO_USER_ID = _get("CEO_USER_ID")
     # ถ้าใส่ไว้ บอทจะตอบเฉพาะ user id เหล่านี้ (คั่นด้วย ,)
     ALLOWED_USER_IDS = [x for x in _get("ALLOWED_USER_IDS").split(",") if x.strip()]

@@ -179,8 +179,13 @@ class Team:
         self.history: dict[str, deque] = defaultdict(lambda: deque(maxlen=12))
 
     # ---------------------------------------------------------------- routing
+    def ceo_ids(self) -> list[str]:
+        """CEO_USER_ID ใส่ได้หลายค่าคั่นด้วย , (เช่น มือถือ 2 เครื่องของ CEO)"""
+        return [x.strip() for x in (self.s.CEO_USER_ID or "").split(",") if x.strip()]
+
     def is_ceo(self, user_id: str) -> bool:
-        return not self.s.CEO_USER_ID or user_id == self.s.CEO_USER_ID
+        ids = self.ceo_ids()
+        return not ids or user_id in ids
 
     def handle(self, text: str, user_id: str, chat_id: str, is_group: bool) -> str | None:
         """คืนข้อความตอบกลับ หรือ None ถ้าไม่ต้องตอบ"""
@@ -191,7 +196,7 @@ class Team:
         if low in ("myid", "/myid"):
             return f"User ID ของคุณ: {user_id}"
         # ข้อมูลการเงินเป็นความลับ: ถ้าไม่ได้ระบุ ALLOWED_USER_IDS จะตอบเฉพาะ CEO
-        allowed = self.s.ALLOWED_USER_IDS or ([self.s.CEO_USER_ID] if self.s.CEO_USER_ID else [])
+        allowed = self.s.ALLOWED_USER_IDS or self.ceo_ids()
         if allowed and user_id not in allowed:
             return None
         if low in ("/report", "รายงาน", "สรุปสัปดาห์"):

@@ -267,3 +267,10 @@ def test_messages_use_ami_and_yuki_avatars():
     assert y[0]["sender"]["iconUrl"].startswith("https://")
     assert split_text("Ami: ok")[0]["sender"]["name"] == "Ami"
     assert "sender" not in split_text("วิธีใช้ ...")[0]
+
+
+def test_ceo_can_use_two_phones(ledger):
+    team = Team(FakeClaude(["สวัสดีค่ะ"]), ledger, cfg(CEO_USER_ID="U_CEO, U_PHONE2"))
+    assert team.is_ceo("U_PHONE2") and team.is_ceo("U_CEO") and not team.is_ceo("U_X")
+    assert team.handle("เป้า", "U_PHONE2", "U_PHONE2", False) is not None
+    assert team.handle("เป้า", "U_X", "U_X", False) is None
