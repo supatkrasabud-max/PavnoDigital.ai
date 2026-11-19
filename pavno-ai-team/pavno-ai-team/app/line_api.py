@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 import urllib.error
 import urllib.request
 
@@ -18,13 +19,34 @@ def verify_signature(channel_secret: str, body: bytes, signature: str) -> bool:
     return hmac.compare_digest(base64.b64encode(mac).decode(), signature or "")
 
 
+# รูปโปรไฟล์ของแต่ละคนในทีม (LINE ต้องเป็น https และ PNG/JPEG) เปลี่ยนที่อยู่ได้ด้วย env AVATAR_BASE_URL
+AVATAR_BASE_URL = os.environ.get(
+    "AVATAR_BASE_URL",
+    "https://raw.githubusercontent.com/supatkrasabud-max/PavnoDigital.ai/main/"
+    "pavno-ai-team/pavno-ai-team/app/static").rstrip("/")
+SPEAKERS = {"Ami": "ami.png", "Yuki": "yuki.png"}
+
+
+def sender_of(text: str) -> tuple[dict | None, str]:
+    """ข้อความที่ขึ้นต้นด้วย "Ami: " หรือ "Yuki: " → ใช้ชื่อและรูปของคนนั้นแทนชื่อบอท"""
+    for name, icon in SPEAKERS.items():
+        if text.startswith(name + ":"):
+            return ({"name": name, "iconUrl": f"{AVATAR_BASE_URL}/{icon}"},
+                    text[len(name) + 1:].lstrip())
+    return None, text
+
+
 def split_text(text: str) -> list[dict]:
+    sender, text = sender_of(text or "-")
     parts, text = [], text or "-"
     while text and len(parts) < 5:  # LINE ส่งได้สูงสุด 5 ข้อความต่อครั้ง
         cut = text[:MAX_LEN]
         if len(text) > MAX_LEN and "\n" in cut:
             cut = cut[:cut.rfind("\n")]
-        parts.append({"type": "text", "text": cut})
+        msg = {"type": "text", "text": cut}
+        if sender:
+            msg["sender"] = sender
+        parts.append(msg)
         text = text[len(cut):].lstrip("\n")
     return parts
 

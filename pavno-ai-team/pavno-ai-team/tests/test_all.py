@@ -258,3 +258,12 @@ def test_thai_names_route(ledger):
     team = Team(FakeClaude(["สวัสดีค่ะ CEO"]), ledger, cfg())
     assert team.handle("อามิ สวัสดี", "U_CEO", "G1", True) == "Ami: สวัสดีค่ะ CEO"
     assert team.handle("amiga hello", "U_CEO", "G1", True) is None
+
+
+def test_messages_use_ami_and_yuki_avatars():
+    y = split_text("Yuki: บันทึกแล้วค่ะ")
+    assert y[0]["text"] == "บันทึกแล้วค่ะ"
+    assert y[0]["sender"]["name"] == "Yuki" and y[0]["sender"]["iconUrl"].endswith("/yuki.png")
+    assert y[0]["sender"]["iconUrl"].startswith("https://")
+    assert split_text("Ami: ok")[0]["sender"]["name"] == "Ami"
+    assert "sender" not in split_text("วิธีใช้ ...")[0]
