@@ -274,3 +274,10 @@ def test_ceo_can_use_two_phones(ledger):
     assert team.is_ceo("U_PHONE2") and team.is_ceo("U_CEO") and not team.is_ceo("U_X")
     assert team.handle("เป้า", "U_PHONE2", "U_PHONE2", False) is not None
     assert team.handle("เป้า", "U_X", "U_X", False) is None
+
+
+def test_group_name_mid_sentence(ledger):
+    team = Team(FakeClaude(["สวัสดีค่ะ CEO"]), ledger, cfg())
+    assert team.handle("สวัสดี Ami", "U_CEO", "G1", True) == "Ami: สวัสดีค่ะ CEO"
+    assert team.handle("ไปกินข้าวกัน", "U_CEO", "G1", True) is None
+    assert team.handle("amiga hello", "U_CEO", "G1", True) is None

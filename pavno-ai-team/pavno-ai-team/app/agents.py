@@ -165,6 +165,9 @@ HELP = """คำสั่งที่ใช้ได้ (แชต 1:1 กับ
 # ชื่อต้องตามด้วยช่องว่าง/เครื่องหมาย/จบข้อความ (\b ใช้กับสระไทยไม่ได้)
 YUKI_RE = re.compile(r"^\s*(@?yuki|ยูกิ)(?=[\s,:]|$)[\s,:]*", re.I)
 AMI_RE = re.compile(r"^\s*(@?ami|อามิ|เอมิ)(?=[\s,:]|$)[\s,:]*", re.I)
+# เรียกชื่อกลางประโยคได้ เช่น "สวัสดี Ami" หรือ "ถาม Yuki หน่อย"
+YUKI_ANY = re.compile(r"(?<![A-Za-z])(yuki|ยูกิ)(?![A-Za-z])", re.I)
+AMI_ANY = re.compile(r"(?<![A-Za-z])(ami|อามิ|เอมิ)(?![A-Za-z])", re.I)
 
 
 class CeoOnly(Exception):
@@ -227,6 +230,10 @@ class Team:
         if AMI_RE.match(t):
             body = AMI_RE.sub("", t, count=1) or "สวัสดี"
             return "Ami: " + self._chat(chat_id, "ami", body, user_id)
+        if YUKI_ANY.search(t):
+            return "Yuki: " + self._chat(chat_id, "yuki", t, user_id)
+        if AMI_ANY.search(t):
+            return "Ami: " + self._chat(chat_id, "ami", t, user_id)
         if not is_group:  # แชต 1:1 ส่งให้ Ami ทุกข้อความ
             return "Ami: " + self._chat(chat_id, "ami", t, user_id)
         return None
