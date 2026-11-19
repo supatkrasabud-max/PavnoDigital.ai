@@ -27,11 +27,48 @@ class ClaudeClient:
             },
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=90) as resp:
+        with urllib.request.urlopen(req, timeout=300) as resp:  # งานค้นเว็บใช้เวลาได้หลายนาที
             return json.loads(resp.read())
 
 
 ToolHandler = Callable[[dict], str]
+
+# ค้นเว็บฝั่งเซิร์ฟเวอร์ของ Anthropic (ประมาณ $10 ต่อ 1,000 ครั้งค้น + ค่า token)
+WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search",
+              "user_location": {"type": "approximate", "country": "TH", "timezone": "Asia/Bangkok"}}
+
+
+def research(client, *, model: str, system: str, prompt: str, max_searches: int = 6,
+             max_tokens: int = 16000, max_rounds: int = 4) -> str:
+    """ให้ Claude ค้นเว็บแล้วตอบ คืนข้อความทั้งหมด (รองรับ pause_turn ที่เกิดตอนค้นนาน)"""
+    msgs = [{"role": "user", "content": prompt}]
+    tool = {**WEB_SEARCH, "max_uses": max_searches}
+    text = ""
+    for _ in range(max_rounds):
+        resp = client.create(model=model, max_tokens=max_tokens, system=system,
+                             messages=msgs, tools=[tool])
+        content = resp.get("content", [])
+        text += "".join(b.get("text", "") for b in content if b.get("type") == "text")
+        if resp.get("stop_reason") != "pause_turn":
+            return text.strip()
+        msgs = msgs + [{"role": "assistant", "content": content}]
+    return text.strip()
+
+
+def extract_json(text: str):
+    """ดึง JSON ก้อนสุดท้ายจากคำตอบ (รองรับ ```json ... ``` หรือ [ ... ] เปล่า ๆ)"""
+    import re
+    blocks = re.findall(r"```(?:json)?\s*(.*?)```", text, re.S)
+    for cand in reversed(blocks + [text]):
+        cand = cand.strip()
+        for opener, closer in (("[", "]"), ("{", "}")):
+            i, j = cand.find(opener), cand.rfind(closer)
+            if i != -1 and j > i:
+                try:
+                    return json.loads(cand[i:j + 1])
+                except json.JSONDecodeError:
+                    continue
+    raise ValueError("ไม่พบ JSON ในคำตอบ")
 
 
 def run_agent(client, *, model: str, system: str, messages: list[dict],

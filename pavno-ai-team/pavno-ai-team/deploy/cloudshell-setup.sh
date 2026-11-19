@@ -60,7 +60,14 @@ if ! secret_exists CRON_SECRET; then head -c 24 /dev/urandom | base64 | tr -dc '
 if ! secret_exists STRIPE_WEBHOOK_SECRET; then printf 'unset' | put_secret STRIPE_WEBHOOK_SECRET; fi
 
 RUN_SA="$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')-compute@developer.gserviceaccount.com"
-for s in GOOGLE_SERVICE_ACCOUNT_JSON ANTHROPIC_API_KEY LINE_CHANNEL_SECRET LINE_CHANNEL_ACCESS_TOKEN CRON_SECRET STRIPE_WEBHOOK_SECRET; do
+SECRETS="ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,LINE_CHANNEL_SECRET=LINE_CHANNEL_SECRET:latest,LINE_CHANNEL_ACCESS_TOKEN=LINE_CHANNEL_ACCESS_TOKEN:latest,GOOGLE_SERVICE_ACCOUNT_JSON=GOOGLE_SERVICE_ACCOUNT_JSON:latest,CRON_SECRET=CRON_SECRET:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest"
+EXTRA=""
+# แจ้ง error ทาง Telegram (ไม่บังคับ): ตั้งด้วย  ADD_TELEGRAM=1 bash deploy/cloudshell-setup.sh
+[[ "${ADD_TELEGRAM:-}" == "1" ]] && FORCE_ASK=1 ask_secret TELEGRAM_BOT_TOKEN "Telegram bot token (จาก @BotFather)"
+if secret_exists TELEGRAM_BOT_TOKEN; then
+  SECRETS="$SECRETS,TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN:latest"; EXTRA="TELEGRAM_BOT_TOKEN"
+fi
+for s in GOOGLE_SERVICE_ACCOUNT_JSON ANTHROPIC_API_KEY LINE_CHANNEL_SECRET LINE_CHANNEL_ACCESS_TOKEN CRON_SECRET STRIPE_WEBHOOK_SECRET $EXTRA; do
   gcloud secrets add-iam-policy-binding "$s" --member "serviceAccount:$RUN_SA" \
     --role roles/secretmanager.secretAccessor >/dev/null
 done
@@ -72,15 +79,15 @@ if gcloud run services describe "$SERVICE" --region "$REGION" >/dev/null 2>&1; t
 fi
 ENV_VARS="LEDGER_BACKEND=sheets,GOOGLE_SHEET_ID=${SHEET_ID},TIMEZONE=Asia/Bangkok,MODEL_LEAD=claude-sonnet-5-5,MODEL_WORKER=claude-haiku-5-5"
 gcloud run deploy "$SERVICE" --source . --region "$REGION" \
-  --allow-unauthenticated --max-instances 1 --memory 512Mi --timeout 300 \
+  --allow-unauthenticated --max-instances 1 --memory 512Mi --timeout 900 \
   $( [[ -z "$EXISTING_ENV" ]] && echo "--set-env-vars $ENV_VARS" || echo "--update-env-vars $ENV_VARS" ) \
-  --set-secrets "ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,LINE_CHANNEL_SECRET=LINE_CHANNEL_SECRET:latest,LINE_CHANNEL_ACCESS_TOKEN=LINE_CHANNEL_ACCESS_TOKEN:latest,GOOGLE_SERVICE_ACCOUNT_JSON=GOOGLE_SERVICE_ACCOUNT_JSON:latest,CRON_SECRET=CRON_SECRET:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest"
+  --set-secrets "$SECRETS"
 URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')"
 
 echo "== 5/6 ตั้งรายงานอัตโนมัติ (เวลาไทย)"
 CRON="$(gcloud secrets versions access latest --secret CRON_SECRET)"
 job() {  # job NAME "CRON" PATH
-  local args=(--location "$REGION" --schedule "$2" --time-zone "Asia/Bangkok" --http-method GET --uri "${URL}$3?key=${CRON}")
+  local args=(--location "$REGION" --schedule "$2" --time-zone "Asia/Bangkok" --http-method GET --attempt-deadline 900s --uri "${URL}$3?key=${CRON}")
   if gcloud scheduler jobs describe "$1" --location "$REGION" >/dev/null 2>&1; then
     gcloud scheduler jobs update http "$1" "${args[@]}" >/dev/null
   else
@@ -91,6 +98,9 @@ job() {  # job NAME "CRON" PATH
 job yuki-daily   "0 8 * * *" /cron/daily
 job yuki-weekly  "0 9 * * 1" /cron/weekly
 job yuki-monthly "0 9 1 * *" /cron/monthly
+job affiliate-research "0 6 * * *" /cron/affiliate
+job sales-research     "30 6 * * 1-5" /cron/sales
+job sales-summary      "0 17 * * 1-5" /cron/sales-summary
 
 echo "== 6/6 เสร็จแล้ว"
 cat <<EOF

@@ -53,6 +53,20 @@ SHEETS: dict[str, tuple[str, list[tuple[str, str]]]] = {
     "Approvals": ("คำขออนุมัติ", [
         ("id", "รหัส"), ("created", "วันที่ขอ"), ("category", "หมวด"), ("amount", "จำนวนเงิน"),
         ("reason", "เหตุผล"), ("requested_by", "ผู้ขอ"), ("status", "สถานะ"), ("decided", "วันที่ตัดสิน")]),
+    # พนักงานคนที่ 1: Affiliate Researcher (คะแนน 5 ข้อ ข้อละ 0–5 รวม 25 ผ่านที่ 17)
+    "Affiliate": ("Pipeline_Affiliate", [
+        ("id", "รหัส"), ("date", "วันที่"), ("platform", "แพลตฟอร์ม"), ("product", "สินค้า"),
+        ("url", "ลิงก์"), ("price", "ราคา (บาท)"), ("commission", "ค่าคอม"), ("rating", "รีวิว"),
+        ("s_demand", "คะแนน กำลังขาย"), ("s_commission", "คะแนน ค่าคอม"), ("s_rating", "คะแนน รีวิว"),
+        ("s_clip", "คะแนน เหมาะกับคลิป"), ("s_price", "คะแนน ราคา"), ("total", "รวม /25"),
+        ("status", "สถานะ"), ("angle", "มุมคลิป"), ("hook", "ฮุก 3 วินาที"), ("script", "บท"),
+        ("caption", "แคปชัน"), ("post_time", "เวลาโพสต์"), ("source", "แหล่งข้อมูล"), ("note", "หมายเหตุ")]),
+    # พนักงานคนที่ 2: Sales Agent (ทุกข้อความต้องให้ CEO อนุมัติก่อนส่ง)
+    "Sales": ("Pipeline_Sales", [
+        ("id", "รหัส"), ("date", "วันที่"), ("business", "ธุรกิจ"), ("type", "ประเภทธุรกิจ"),
+        ("area", "พื้นที่"), ("contact", "ช่องทางติดต่อสาธารณะ"), ("source", "แหล่งข้อมูล"),
+        ("offer", "ข้อเสนอ"), ("score", "คะแนน /10"), ("reason", "เหตุผล"), ("draft", "ร่างข้อความ"),
+        ("status", "สถานะ"), ("updated", "อัปเดตล่าสุด"), ("reply", "ลูกค้าตอบ"), ("next_step", "ขั้นต่อไป")]),
 }
 
 DEFAULT_BUDGET = {
@@ -319,6 +333,36 @@ class Ledger:
         if not found:
             raise ValueError(f"ไม่พบคำขอ {approval_id} ที่รออนุมัติ")
         self.b.overwrite("Approvals", rows)
+        return found
+
+    # ---- Pipeline (Affiliate / Sales)
+    def add_pipeline(self, sheet: str, row: dict, prefix: str) -> dict:
+        row = {**row, "id": prefix + uuid.uuid4().hex[:4].upper(),
+               "date": row.get("date") or today(self.tz).isoformat()}
+        self.b.append(sheet, row)
+        return row
+
+    def pipeline(self, sheet: str, since: date | None = None) -> list[dict]:
+        out = []
+        for r in self.b.rows(sheet):
+            try:
+                d = date.fromisoformat(str(r.get("date"))[:10])
+            except ValueError:
+                continue
+            if since is None or d >= since:
+                out.append(r)
+        return out
+
+    def update_pipeline(self, sheet: str, row_id: str, **fields) -> dict:
+        rows = self.b.rows(sheet)
+        found = None
+        for r in rows:
+            if str(r["id"]).upper() == row_id.upper():
+                r.update(fields)
+                found = r
+        if not found:
+            raise ValueError(f"ไม่พบรหัส {row_id}")
+        self.b.overwrite(sheet, rows)
         return found
 
     # ---- สรุป

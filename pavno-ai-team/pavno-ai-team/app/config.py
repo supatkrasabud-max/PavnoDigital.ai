@@ -35,6 +35,14 @@ class Settings:
     # รหัสลับสำหรับ Cloud Scheduler เรียกรายงานอัตโนมัติ
     CRON_SECRET = _get("CRON_SECRET")
 
+    # พนักงาน Affiliate Researcher / Sales Agent (ใช้ค้นเว็บ ต้องเป็นรุ่นที่รองรับ web_search_20260209)
+    MODEL_RESEARCH = _get("MODEL_RESEARCH", "claude-sonnet-5-5")
+    SALES_AREA = _get("SALES_AREA", "กรุงเทพฯ และปริมณฑล")
+
+    # แจ้ง error ทาง Telegram (ไม่บังคับ ถ้าไม่ตั้งจะส่ง LINE หา CEO แทน)
+    TELEGRAM_BOT_TOKEN = _get("TELEGRAM_BOT_TOKEN")
+    TELEGRAM_CHAT_ID = _get("TELEGRAM_CHAT_ID")
+
     # กฎการเงิน
     APPROVAL_THRESHOLD = float(_get("APPROVAL_THRESHOLD", "2000"))
     TIMEZONE = _get("TIMEZONE", "Asia/Bangkok")

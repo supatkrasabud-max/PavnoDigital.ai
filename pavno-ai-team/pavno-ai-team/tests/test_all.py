@@ -281,3 +281,117 @@ def test_group_name_mid_sentence(ledger):
     assert team.handle("สวัสดี Ami", "U_CEO", "G1", True) == "Ami: สวัสดีค่ะ CEO"
     assert team.handle("ไปกินข้าวกัน", "U_CEO", "G1", True) is None
     assert team.handle("amiga hello", "U_CEO", "G1", True) is None
+
+
+# ------------------------------------------------------------------ พนักงาน Affiliate / Sales
+
+from app.pipelines import (AFF_CHECK, AFF_FAIL, AFF_PASS, LEAD_INBOUND, LEAD_OK, LEAD_REPLY, LEAD_WAIT,
+                           parse_commission, score_product, with_disclosure)
+
+
+def as_json(items):
+    return "ผลการค้น\n```json\n" + json.dumps(items, ensure_ascii=False) + "\n```"
+
+
+AFF_ITEMS = [
+    {"platform": "Shopee", "product": "ที่ตักน้ำแข็งพับได้", "url": "https://shopee.co.th/x", "price": 199,
+     "commission": "12%", "rating": 4.8, "s_demand": 4, "s_clip": 5, "angle": "ก่อน/หลัง",
+     "hook": "ตู้เย็นรกแค่ไหนก็จบ", "script": "ช็อต1...", "caption": "ของมันต้องมี", "post_time": "20:00",
+     "source": "https://example.com/trend"},
+    {"platform": "TikTok Shop", "product": "แปรงล้างขวด", "url": "", "price": 89, "commission": "",
+     "rating": "", "s_demand": 5, "s_clip": 5, "s_commission": 3, "s_rating": 4, "caption": "#ค่าคอม",
+     "source": "https://example.com/b"},
+    {"platform": "Shopee", "product": "สายชาร์จถูก", "price": 39, "commission": "3%", "rating": 4.2,
+     "s_demand": 3, "s_clip": 2, "source": "https://example.com/c"},
+]
+
+
+def test_affiliate_scoring_rules():
+    assert parse_commission("12%", 200) == (24.0, 12.0)
+    assert parse_commission("20 บาท", 100) == (20.0, 20.0)
+    assert parse_commission("", 100) == (None, None)
+    ok = score_product(AFF_ITEMS[0])
+    assert ok["status"] == AFF_PASS and ok["total"] >= 17
+    unknown = score_product(AFF_ITEMS[1])       # คะแนนถึง แต่ยังไม่รู้ค่าคอม → ให้ CEO เช็ก
+    assert unknown["status"] == AFF_CHECK
+    bad = score_product(AFF_ITEMS[2])
+    assert bad["status"] == AFF_FAIL and bad["reasons"]
+    low_comm = score_product({**AFF_ITEMS[0], "commission": "10 บาท", "price": 500})  # 2% และ 10 บาท
+    assert low_comm["status"] == AFF_FAIL
+    assert with_disclosure("ดีมาก") == "ดีมาก #ค่าคอม #Ad"
+    assert with_disclosure("x #Ad #ค่าคอม") == "x #Ad #ค่าคอม"
+
+
+def test_affiliate_cron_writes_pipeline_and_pushes(ledger):
+    line = FakeLine()
+    claude = FakeClaude([as_json(AFF_ITEMS), as_json(AFF_ITEMS)])
+    team = Team(claude, ledger, cfg())
+    client = TestClient(build_app(team, line, cfg()))
+    dry = client.get("/cron/affiliate?key=cron&dry=1")
+    assert dry.status_code == 200 and not ledger.pipeline("Affiliate") and not line.sent
+    r = client.get("/cron/affiliate?key=cron")
+    assert r.status_code == 200 and "ที่ตักน้ำแข็งพับได้" in r.text and "เป้าสัปดาห์นี้" in r.text
+    rows = ledger.pipeline("Affiliate")
+    assert len(rows) == 3 and all("#ค่าคอม" in r["caption"] and "#Ad" in r["caption"] for r in rows)
+    assert claude.calls[0]["tools"][0]["type"] == "web_search_20260209"
+    assert line.sent[0][0] == "push" and line.sent[0][1] == "G1"
+    # CEO ใส่ค่าคอมจริงจากแอป → คำนวณคะแนนใหม่
+    check = next(r for r in rows if r["status"] == AFF_CHECK)
+    out = team.handle(f"ค่าคอม {check['id']} 10% รีวิว 4.7", "U_CEO", "G1", True)
+    assert "ผ่าน" in out and ledger.pipeline("Affiliate")[1]["status"] == AFF_PASS
+    assert "ทำคลิปแล้ว" in team.handle(f"ถ่ายแล้ว {check['id']}", "U_CEO", "G1", True)
+    assert team.handle(f"ถ่ายแล้ว {check['id']}", "U_X", "G1", True) is None
+
+
+SALES_ITEMS = [
+    {"business": "อนุบาลบ้านดอกไม้", "type": "โรงเรียนอนุบาล", "area": "นนทบุรี", "contact": "เพจ fb.com/x",
+     "source": "https://example.com/school", "offer": "PAVNO Learn", "score": 9, "reason": "มีชั้นเตรียมอนุบาล",
+     "draft": "สวัสดีครับ ...\nหากไม่สะดวกรับข้อมูล แจ้งได้เลยครับ จะไม่ติดต่ออีก", "next_step": "ส่งตัวอย่าง PDF"},
+    {"business": "ร้านกาแฟ A", "type": "ร้านอาหาร", "source": "https://example.com/cafe", "offer": "พนักงาน AI LINE",
+     "score": 6, "draft": ""},
+    {"business": "ไม่มีที่มา", "source": "", "draft": "x"},
+]
+
+
+def test_sales_agent_needs_ceo_approval(ledger):
+    team = Team(FakeClaude([as_json(SALES_ITEMS)]), ledger, cfg())
+    text = team.pipes.run_sales()
+    rows = ledger.pipeline("Sales")
+    assert len(rows) == 2                      # รายที่ไม่มีแหล่งที่มาถูกตัดทิ้ง
+    assert rows[0]["status"] == LEAD_WAIT and "อนุมัติลีด" in text
+    lead = rows[0]["id"]
+    assert team.handle(f"อนุมัติลีด {lead}", "U_X", "G1", True) is None   # คนอื่นอนุมัติไม่ได้
+    assert "อนุบาลบ้านดอกไม้" in team.handle("ลีด", "U_CEO", "U_CEO", False)
+    out = team.handle(f"อนุมัติลีด {lead}", "U_CEO", "G1", True)
+    assert "คัดลอกข้อความนี้ไปส่งเอง" in out and "จะไม่ติดต่ออีก" in out
+    assert ledger.pipeline("Sales")[0]["status"] == LEAD_OK
+    out = team.handle(f"ตอบกลับ {lead} สนใจ ขอราคา", "U_CEO", "G1", True)
+    assert "🔔" in out and ledger.pipeline("Sales")[0]["status"] == LEAD_REPLY
+    summary = team.pipes.sales_summary()
+    assert "ลีดใหม่วันนี้: 2" in summary and "สนใจ ขอราคา" in summary and "ลีด 2/30" in summary
+
+
+def test_stranger_message_becomes_lead_and_alerts_ceo(ledger):
+    line = FakeLine()
+    team = Team(FakeClaude([]), ledger, cfg())
+    client = TestClient(build_app(team, line, cfg()))
+    body = json.dumps({"events": [{"type": "message", "replyToken": "r",
+                                   "source": {"type": "user", "userId": "U_SHOP"},
+                                   "message": {"type": "text", "text": "สนใจบอท LINE ค่ะ"}}]}).encode()
+    assert client.post("/callback", content=body, headers={"x-line-signature": line_sig(body)}).status_code == 200
+    assert line.sent[0] == ("push", "U_CEO", line.sent[0][2]) and "สนใจบอท LINE" in line.sent[0][2]
+    assert line.sent[1][0] == "reply" and "ขอบคุณที่ติดต่อ" in line.sent[1][2]
+    lead = ledger.pipeline("Sales")[0]
+    assert lead["status"] == LEAD_INBOUND and "U_SHOP" in lead["contact"]
+
+
+def test_job_error_alerts_ceo(ledger):
+    class Broken:
+        def create(self, **body):
+            raise RuntimeError("credit balance is too low")
+    line = FakeLine()
+    client = TestClient(build_app(Team(Broken(), ledger, cfg()), line, cfg()))
+    r = client.get("/cron/sales?key=cron")
+    assert r.status_code == 500
+    assert line.sent == [("push", "U_CEO", line.sent[0][2])] and "credit balance" in line.sent[0][2]
+    assert client.get("/cron/affiliate?key=nope").status_code == 403

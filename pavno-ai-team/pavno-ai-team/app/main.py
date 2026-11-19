@@ -5,6 +5,10 @@
   GET  /cron/daily      ← Cloud Scheduler เรียกทุกเช้า → สรุปเมื่อวาน + ความคืบหน้าเทียบเป้า
   GET  /cron/weekly     ← Cloud Scheduler เรียกทุกวันจันทร์ → รายงานสัปดาห์ที่แล้ว
   GET  /cron/monthly    ← Cloud Scheduler เรียกทุกวันที่ 1 → รายงานเดือนที่แล้ว
+  GET  /cron/affiliate   ← ทุกเช้า 06:00 → Affiliate Researcher หาสินค้า + บท ลง Pipeline_Affiliate
+  GET  /cron/sales       ← จันทร์–ศุกร์ 06:30 → Sales Agent หาลีด + ร่างข้อความ (รอ CEO อนุมัติ)
+  GET  /cron/sales-summary ← จันทร์–ศุกร์ 17:00 → สรุปงานขาย
+  (ใส่ &dry=1 เพื่อทดลองรันโดยไม่บันทึกและไม่ส่ง LINE)
   GET  /health
 """
 from __future__ import annotations
@@ -16,11 +20,13 @@ import logging
 import time
 
 from starlette.applications import Starlette
+from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse
 from starlette.routing import Route
 
 from .agents import Team
+from .alerts import alert_error
 from .config import settings
 from .ledger import baht, make_ledger
 from .line_api import LineClient, verify_signature
@@ -46,9 +52,22 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
             try:
                 answer = team.handle(ev["message"]["text"], src.get("userId", ""), chat_id,
                                      is_group=src.get("type") in ("group", "room"))
-            except Exception:
+            except Exception as err:
                 log.exception("handle failed")
+                alert_error(cfg, line, "ตอบแชต", err)
                 answer = "ขออภัย ระบบขัดข้องชั่วคราว ลองใหม่อีกครั้งนะคะ"
+            if answer is None and src.get("type") == "user" and not team.is_member(src.get("userId", "")):
+                # คนนอกทักเข้า LINE OA → ตอบรับสุภาพ บันทึกเป็นลีด แล้วแจ้ง CEO ทันที
+                answer = "ขอบคุณที่ติดต่อ PAVNO DIGITAL ค่ะ ทีมงานได้รับข้อความแล้ว จะติดต่อกลับโดยเร็วค่ะ"
+                try:
+                    lead = team.pipes.inbound(src.get("userId", ""), ev["message"]["text"])
+                    ceo = cfg.CEO_USER_ID.split(",")[0].strip()
+                    if ceo:
+                        line.push(ceo, f"🔔 มีคนทักเข้า LINE OA ({lead['id']}): {ev['message']['text'][:300]}\n"
+                                       "ตอบกลับได้ที่ LINE OA Manager > แชต")
+                except Exception as err:
+                    log.exception("inbound alert failed")
+                    alert_error(cfg, line, "แจ้งลูกค้าทัก", err)
             if answer:
                 try:
                     line.reply_or_push(ev.get("replyToken", ""), chat_id, answer)
@@ -90,6 +109,24 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
             return PlainTextResponse(text)
         return handler
 
+    def _job(name: str, run, prefix: str = ""):
+        """งานตั้งเวลาของพนักงาน AI: รัน → ส่ง LINE → ถ้าพังแจ้ง error (Telegram/LINE)"""
+        async def handler(request: Request):
+            if not cfg.CRON_SECRET or request.query_params.get("key") != cfg.CRON_SECRET:
+                return PlainTextResponse("forbidden", status_code=403)
+            dry = request.query_params.get("dry") == "1"
+            try:
+                text = await run_in_threadpool(run, dry)
+            except Exception as err:
+                log.exception("%s failed", name)
+                alert_error(cfg, line, name, err)
+                return PlainTextResponse(f"error: {err}", status_code=500)
+            target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID.split(",")[0].strip()
+            if target and not dry:
+                line.push(target, prefix + text)
+            return PlainTextResponse(text)
+        return handler
+
     async def health(request: Request):
         return PlainTextResponse("ok")
 
@@ -99,6 +136,11 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
         Route("/cron/daily", _cron("yesterday", "สรุปประจำวัน (เมื่อวาน)"), methods=["GET", "POST"]),
         Route("/cron/weekly", _cron("last_week", "รายงานบัญชีประจำสัปดาห์"), methods=["GET", "POST"]),
         Route("/cron/monthly", _cron("last_month", "รายงานบัญชีประจำเดือน"), methods=["GET", "POST"]),
+        Route("/cron/affiliate", _job("affiliate", lambda dry: team.pipes.run_affiliate(dry=dry)),
+              methods=["GET", "POST"]),
+        Route("/cron/sales", _job("sales", lambda dry: team.pipes.run_sales(dry=dry)), methods=["GET", "POST"]),
+        Route("/cron/sales-summary", _job("sales-summary", lambda dry: team.pipes.sales_summary()),
+              methods=["GET", "POST"]),
         Route("/health", health),
     ])
 

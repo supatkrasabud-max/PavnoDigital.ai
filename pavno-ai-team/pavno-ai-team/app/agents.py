@@ -8,6 +8,7 @@ from collections import defaultdict, deque
 from .ledger import (KINDS, SET_DEBT, SET_SAVING_GOAL, Ledger, baht, format_report,
                      period_range, today)
 from .llm import run_agent
+from .pipelines import Pipelines
 
 COMPANY = """บริษัท: PAVNO DIGITAL (https://www.pavnodigital.com/)
 รายได้หลักตอนนี้:
@@ -160,6 +161,16 @@ HELP = """คำสั่งที่ใช้ได้ (แชต 1:1 กับ
 • Ami ทำแผนคอนเทนต์ TikTok สัปดาห์นี้
 • อนุมัติ A1B2 / ไม่อนุมัติ A1B2
 
+พนักงาน Affiliate (ส่งรายการทุกเช้า 06:00):
+• สินค้าวันนี้
+• ค่าคอม AF1A2B 10% รีวิว 4.8  (ใส่ค่าจริงจากแอป Affiliate)
+• ถ่ายแล้ว AF1A2B
+
+พนักงาน Sales (ส่งลีดจันทร์–ศุกร์ 06:30 สรุป 17:00):
+• ลีด  (ดูร่างที่รออนุมัติ)
+• อนุมัติลีด S1A2B / ไม่อนุมัติลีด S1A2B / ส่งแล้ว S1A2B
+• ตอบกลับ S1A2B สนใจ ขอราคา
+
 รายงานอัตโนมัติ: ทุกวัน 08:00 · ทุกวันจันทร์ 09:00 · ทุกวันที่ 1 เวลา 09:00"""
 
 # ชื่อต้องตามด้วยช่องว่าง/เครื่องหมาย/จบข้อความ (\b ใช้กับสระไทยไม่ได้)
@@ -180,6 +191,7 @@ class Team:
         self.ledger = ledger
         self.s = settings
         self.history: dict[str, deque] = defaultdict(lambda: deque(maxlen=12))
+        self.pipes = Pipelines(client, ledger, settings)
 
     # ---------------------------------------------------------------- routing
     def ceo_ids(self) -> list[str]:
@@ -189,6 +201,11 @@ class Team:
     def is_ceo(self, user_id: str) -> bool:
         ids = self.ceo_ids()
         return not ids or user_id in ids
+
+    def is_member(self, user_id: str) -> bool:
+        """คนในทีมที่คุยกับบอทได้ (ALLOWED_USER_IDS หรือ CEO) ถ้ายังไม่ตั้งค่าเลย ถือว่าทุกคนเป็นทีม"""
+        allowed = self.s.ALLOWED_USER_IDS or self.ceo_ids()
+        return not allowed or user_id in allowed
 
     def handle(self, text: str, user_id: str, chat_id: str, is_group: bool) -> str | None:
         """คืนข้อความตอบกลับ หรือ None ถ้าไม่ต้องตอบ"""
@@ -223,6 +240,14 @@ class Team:
             word = "อนุมัติแล้ว" if r["status"] == "approved" else "ไม่อนุมัติ"
             return (f"Yuki: {word} {r['id']} — {r['category']} {baht(float(r['amount']))}"
                     f" ({r['reason']})\nเมื่อจ่ายเงินจริงแล้ว พิมพ์ \"Yuki บันทึกจ่าย ...\" ได้เลยค่ะ")
+
+        if self.is_ceo(user_id):  # คำสั่งพนักงาน Affiliate / Sales เช่น "ลีด" "อนุมัติลีด S1A2" "ค่าคอม AF12 10%"
+            try:
+                out = self.pipes.command(t)
+            except ValueError as e:
+                out = str(e)
+            if out:
+                return out
 
         if YUKI_RE.match(t):
             body = YUKI_RE.sub("", t, count=1) or "สรุปสถานะการเงินสัปดาห์นี้"
