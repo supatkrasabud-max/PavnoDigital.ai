@@ -5,17 +5,19 @@ import json
 import re
 from collections import defaultdict, deque
 
-from .ledger import KINDS, Ledger, baht, format_report, period_range
+from .ledger import (KINDS, SET_DEBT, SET_SAVING_GOAL, Ledger, baht, format_report,
+                     period_range, today)
 from .llm import run_agent
 
 COMPANY = """บริษัท: PAVNO DIGITAL (https://www.pavnodigital.com/)
-ธุรกิจ: ขายไฟล์ดิจิทัลภาษาไทย — PDF ระบายสีพร้อมนิทานสำหรับเด็ก 4–7 ปี (COLOR & STORY),
-แบบฝึกบวกลบพร้อมเฉลย (COUNT & DISCOVER), เทมเพลตพร้อมใช้ และคู่มือ AI กับการทำงาน
-ราคาเป้าหมาย: ไฟล์เดี่ยว 59–99 บาท, แพ็กเกจ 249–399 บาท, เทมเพลต 149–299 บาท,
-สมาชิกรายเดือน 149 บาท, ลิขสิทธิ์โรงเรียน 1,500–3,000 บาท/ปี,
-บริการติดตั้งพนักงาน AI บน LINE ให้ SME 15,000–40,000 บาท/งาน
-เป้าหมายบริษัท: มีกำไรทุกเดือนเพื่อชำระหนี้ 3,000,000 บาท งบดำเนินงานไม่เกิน 10,000 บาท/เดือน
-ช่องทางรับเงิน: Stripe (PromptPay/บัตร)
+รายได้หลักตอนนี้:
+- PAVNO Learn: สมุดฝึก PDF สำหรับเด็ก (ก-ฮ, ABC, ฮิรางานะ, คันจิ, จีน, คณิต 4 เล่ม, ระบายสี) 79–169 บาท ขายบนเว็บผ่าน Stripe
+- Affiliate: ทำคลิปรีวิวสินค้า Shopee/TikTok แล้วรับค่าคอม (มีระบบหาสินค้าและเขียนบทให้ทุกเช้า)
+- Etsy: ร้านขาย PDF ต่างประเทศ (รอยืนยันตัวตน Payoneer)
+- บริการ IT และบริการติดตั้งพนักงาน AI บน LINE ให้ SME
+เป้าหมายระยะยาวของ CEO: สร้างรายได้หลายช่องทางที่โตได้โดยไม่ต้องพึ่งงานประจำ ปลดหนี้ มีเงินเก็บของบริษัท
+และสร้างระบบที่ดูแลครอบครัวขนาดใหญ่ได้
+บัญชีทั้งหมดอยู่ใน Google Sheet "PAVNO บัญชี" (ใช้ร่วมกับเว็บแอป Yuki Ledger)
 ผู้บริหาร: CEO คือเจ้าของบริษัท ทุกการใช้เงินจริงต้องผ่าน Yuki และ CEO เป็นคนกดจ่ายเงินเอง"""
 
 STYLE = """ตอบเป็นภาษาไทย กระชับ เหมาะกับการอ่านในแชต LINE (ไม่ใช้ markdown ตาราง ไม่ใช้ # หัวข้อ)
@@ -34,6 +36,15 @@ WORKERS = {
     "support": ("ฝ่ายบริการลูกค้า", """คุณคือ Agent ฝ่ายบริการลูกค้าของ PAVNO DIGITAL
 หน้าที่: ร่างคำตอบลูกค้า (สุภาพ อบอุ่น), FAQ, นโยบายคืนเงิน, ข้อความหลังการขาย
 และสรุปปัญหาที่ลูกค้าพบบ่อยเพื่อปรับปรุงสินค้า"""),
+    "planner": ("ฝ่ายวางแผนธุรกิจ", """คุณคือ Agent ฝ่ายวางแผนธุรกิจของ PAVNO DIGITAL
+หน้าที่: แปลงเป้าหมายของ CEO เป็นแผนที่ทำได้จริง เช่น แผน 30/90 วัน, ช่องทางรายได้ใหม่, การแบ่งเวลา,
+ขั้นบันไดจากรายได้เสริมไปสู่รายได้หลักที่ไม่ต้องพึ่งงานประจำ และระบบที่ทำงานซ้ำได้ (อัตโนมัติ/จ้างคน)
+กติกา:
+- ทุกแผนต้องมี ตัวเลขเป้า, งานรายสัปดาห์, ต้นทุนเป็นบาท, ตัวชี้วัด และจุดตัดสินใจว่าจะทำต่อหรือหยุด
+- ใช้ตัวเลขจริงที่ได้รับมาเท่านั้น ถ้าไม่มีข้อมูลให้บอกว่าเป็นสมมติฐาน ห้ามสัญญาว่ารวยเร็วหรือได้เงินแน่นอน
+- ห้ามแนะนำ แชร์ลูกโซ่ การพนัน เทรดเก็งกำไร หรือกู้เงินมาลงทุน
+- ไม่แนะนำหุ้น กองทุน หรือคริปโตรายตัว (ไม่ใช่ที่ปรึกษาการลงทุนที่มีใบอนุญาต) ให้แนะนำเฉพาะการลงทุนในธุรกิจของบริษัท
+- ลำดับความสำคัญทางการเงิน: เงินสำรองฉุกเฉิน → ปิดหนี้ดอกเบี้ยสูง → ลงทุนต่อยอดธุรกิจที่พิสูจน์แล้ว"""),
 }
 
 AMI_SYSTEM = f"""คุณคือ Ami ผู้ช่วยส่วนตัวของ CEO บริษัท PAVNO DIGITAL ทำงานในกลุ่ม LINE ของบริษัท
@@ -41,8 +52,10 @@ AMI_SYSTEM = f"""คุณคือ Ami ผู้ช่วยส่วนตั�
 
 หน้าที่ของคุณ:
 - รับคำสั่งจาก CEO แตกเป็นงานย่อย แล้วมอบหมายให้ Agent ที่เหมาะสมด้วย tool delegate
-  (product = ฝ่ายสินค้า, marketing = ฝ่ายการตลาด, support = ฝ่ายบริการลูกค้า)
-- เรื่องเงิน งบ บัญชี การขอใช้เงิน ให้ถาม Yuki ด้วย tool ask_yuki เสมอ ห้ามตัดสินเรื่องเงินเอง
+  (product = ฝ่ายสินค้า, marketing = ฝ่ายการตลาด, support = ฝ่ายบริการลูกค้า, planner = ฝ่ายวางแผนธุรกิจ)
+- เรื่องเงิน งบ บัญชี เป้าหมายรายได้ การขอใช้เงิน ให้ถาม Yuki ด้วย tool ask_yuki เสมอ ห้ามตัดสินเรื่องเงินเอง
+- เมื่อ CEO ขอแผนธุรกิจหรือแผนการเงิน ให้ถาม Yuki เอาตัวเลขจริงและเป้าปัจจุบันก่อน แล้วส่งตัวเลขนั้นให้ planner วางแผน
+- งานที่ต้องลงมือทำบนคอมพิวเตอร์ (แก้เว็บ ทำไฟล์ ทำคลิป) ให้สรุปเป็นรายการงานให้ CEO นำไปสั่ง Claude Code ต่อ
 - รวบรวมผลงานจากทุกฝ่าย แล้วสรุปให้ CEO: ทำอะไรไปแล้ว ผลลัพธ์ งบที่ต้องใช้ และสิ่งที่ CEO ต้องตัดสินใจ
 - ถ้างานไหนต้องใช้เงิน ให้ส่งให้ Yuki สร้างคำขออนุมัติ แล้วบอก CEO ว่าต้องพิมพ์อนุมัติรหัสอะไร
 {STYLE}"""
@@ -51,12 +64,16 @@ YUKI_SYSTEM = f"""คุณคือ Yuki เจ้าหน้าที่ก�
 {COMPANY}
 
 หน้าที่ของคุณ:
-- บันทึกรายรับ รายจ่าย เงินทุนที่ CEO เติม และการชำระหนี้ ลงสมุดบัญชีด้วย tool เท่านั้น
+- บันทึกรายรับ รายจ่าย ลงทุน เงินเก็บ เงินทุนที่ CEO เติม และการชำระหนี้ ลงสมุดบัญชีด้วย tool เท่านั้น
+  ใส่ช่องทาง (channel) ของรายรับทุกครั้ง เช่น เว็บ PAVNO, Shopee, TikTok, Etsy, บริการ IT
 - คุมงบประมาณรายเดือนตามหมวด เตือนเมื่อใกล้เกินหรือเกินงบ
+- ดูแลเป้าหมาย: เป้ารายรับ กำไร เงินเก็บรายเดือน เป้าแต่ละช่องทาง และเป้าเงินเก็บสะสม (get_goals / set_goal / set_channel_target)
 - ค่าใช้จ่ายที่เกินงบหมวด หรือเกิน {{threshold}} บาท ต้องสร้างคำขออนุมัติ (request_approval) ให้ CEO ก่อน
 - สรุปตัวเลขจาก tool get_summary เท่านั้น ห้ามคำนวณหรือเดายอดเอง
-- บอก CEO เสมอว่าควรเติมทุนเท่าไรเพื่อให้บริษัทเดินต่อได้
-- หมวดที่ใช้: ads, accountant, ai_api, server, product, other (รายรับ: pdf, bundle, subscription, school_license, service)
+- หมวดที่ใช้ (ภาษาไทย ตรงกับชีต): รายจ่าย = ค่าโฆษณา, ซอฟต์แวร์และ AI, ค่าธรรมเนียมแพลตฟอร์ม, ซื้อสินค้ามารีวิว,
+  อุปกรณ์, ค่าพิมพ์และค่าส่ง, ค่าอินเทอร์เน็ตและโทรศัพท์, ภาษี, รายจ่ายอื่น
+  รายรับ = ขายไฟล์ PDF (เว็บ/Stripe), ขาย Etsy, ค่าคอม Shopee Affiliate, ค่าคอม TikTok Affiliate, บริการ IT / รับจ้าง, รายรับอื่น
+  เงินเก็บ = เงินเก็บบริษัท, เงินสำรองฉุกเฉิน, กันไว้จ่ายภาษี / ลงทุน = ต่อยอดธุรกิจ
 - คุณไม่มีสิทธิ์จ่ายเงินจริง และไม่ใช่ผู้ทำบัญชีตามกฎหมาย งบการเงินประจำปีต้องให้นักบัญชีที่ขึ้นทะเบียนรับรอง
 ผู้สั่งงานตอนนี้ {{who}}
 {STYLE}"""
@@ -64,17 +81,32 @@ YUKI_SYSTEM = f"""คุณคือ Yuki เจ้าหน้าที่ก�
 YUKI_TOOLS = [
     {"name": "add_entry", "description": "บันทึกรายการบัญชี",
      "input_schema": {"type": "object", "properties": {
-         "kind": {"type": "string", "enum": list(KINDS)},
+         "kind": {"type": "string", "enum": list(KINDS),
+                  "description": "income=รายรับ expense=รายจ่าย invest=ลงทุน saving=เงินเก็บ capital=เงินทุน CEO debt_payment=ชำระหนี้"},
          "category": {"type": "string"},
+         "channel": {"type": "string", "description": "ช่องทาง เช่น Shopee, TikTok, เว็บ PAVNO"},
          "amount": {"type": "number", "description": "จำนวนเงินบาท ค่าบวก"},
          "note": {"type": "string"},
          "date": {"type": "string", "description": "YYYY-MM-DD ไม่ใส่ = วันนี้"}},
          "required": ["kind", "category", "amount"]}},
-    {"name": "get_summary", "description": "สรุปบัญชีตามช่วงเวลา",
+    {"name": "get_summary", "description": "สรุปบัญชีตามช่วงเวลา พร้อมความคืบหน้าเทียบเป้าของเดือน",
      "input_schema": {"type": "object", "properties": {
          "period": {"type": "string",
-                    "enum": ["this_week", "last_week", "this_month", "last_month", "all"]}},
+                    "enum": ["today", "yesterday", "this_week", "last_week", "this_month", "last_month", "all"]}},
          "required": ["period"]}},
+    {"name": "get_goals", "description": "ดูเป้าหมายของเดือน เป้าแต่ละช่องทาง และเป้าเงินเก็บสะสม",
+     "input_schema": {"type": "object", "properties": {
+         "month": {"type": "string", "description": "YYYY-MM ไม่ใส่ = เดือนนี้"}}}},
+    {"name": "set_goal", "description": "ตั้งเป้ารายรับ/กำไร/เงินเก็บรายเดือน (CEO เท่านั้น) ไม่ใส่ month = ใช้ทุกเดือน",
+     "input_schema": {"type": "object", "properties": {
+         "month": {"type": "string", "description": "YYYY-MM หรือเว้นว่างเพื่อเป็นค่าเริ่มต้น"},
+         "income": {"type": "number"}, "profit": {"type": "number"}, "saving": {"type": "number"},
+         "saving_total": {"type": "number", "description": "เป้าเงินเก็บสะสมของบริษัท (ไม่บังคับ)"}},
+         "required": ["income", "profit", "saving"]}},
+    {"name": "set_channel_target", "description": "เพิ่มช่องทางรายได้ใหม่ หรือแก้เป้ารายรับต่อเดือนของช่องทาง (CEO เท่านั้น)",
+     "input_schema": {"type": "object", "properties": {
+         "name": {"type": "string"}, "target": {"type": "number"}},
+         "required": ["name", "target"]}},
     {"name": "list_budgets", "description": "ดูวงเงินงบประมาณรายเดือนทุกหมวด",
      "input_schema": {"type": "object", "properties": {}}},
     {"name": "set_budget", "description": "ตั้ง/แก้วงเงินงบรายเดือนของหมวด (CEO เท่านั้น)",
@@ -108,6 +140,28 @@ AMI_TOOLS = [
                       "required": ["request"]}},
 ]
 
+HELP = """คำสั่งที่ใช้ได้ (แชต 1:1 กับบอท ไม่ต้องพิมพ์ชื่อก็ได้ / ในกลุ่มให้ขึ้นต้นด้วย Ami หรือ Yuki)
+
+สรุปทันที (ไม่เสียค่า AI):
+• สรุปวันนี้ • เป้า • รายงาน (สัปดาห์นี้) • สรุปเดือนนี้
+
+บันทึกเงิน:
+• Yuki ได้ค่าคอม Shopee 1,250 บาท
+• Yuki จ่ายค่าโฆษณา TikTok 300
+• Yuki โอนเข้าเงินเก็บบริษัท 2,000
+
+ตั้งเป้า:
+• Yuki ตั้งเป้าทุกเดือน รายรับ 30,000 กำไร 15,000 เงินเก็บ 5,000
+• Yuki ตั้งเป้าเงินเก็บสะสม 500,000
+• Yuki เพิ่มช่องทาง Lazada เป้า 3,000
+
+วางแผนและสั่งงาน:
+• Ami วางแผน 90 วันให้รายได้ถึง 50,000 ต่อเดือน
+• Ami ทำแผนคอนเทนต์ TikTok สัปดาห์นี้
+• อนุมัติ A1B2 / ไม่อนุมัติ A1B2
+
+รายงานอัตโนมัติ: ทุกวัน 08:00 · ทุกวันจันทร์ 09:00 · ทุกวันที่ 1 เวลา 09:00"""
+
 # ชื่อต้องตามด้วยช่องว่าง/เครื่องหมาย/จบข้อความ (\b ใช้กับสระไทยไม่ได้)
 YUKI_RE = re.compile(r"^\s*(@?yuki|ยูกิ)(?=[\s,:]|$)[\s,:]*", re.I)
 AMI_RE = re.compile(r"^\s*(@?ami|อามิ|เอมิ)(?=[\s,:]|$)[\s,:]*", re.I)
@@ -136,10 +190,20 @@ class Team:
             return f"Group ID: {chat_id}"
         if low in ("myid", "/myid"):
             return f"User ID ของคุณ: {user_id}"
-        if self.s.ALLOWED_USER_IDS and user_id not in self.s.ALLOWED_USER_IDS:
+        # ข้อมูลการเงินเป็นความลับ: ถ้าไม่ได้ระบุ ALLOWED_USER_IDS จะตอบเฉพาะ CEO
+        allowed = self.s.ALLOWED_USER_IDS or ([self.s.CEO_USER_ID] if self.s.CEO_USER_ID else [])
+        if allowed and user_id not in allowed:
             return None
-        if low in ("/report", "รายงาน"):
+        if low in ("/report", "รายงาน", "สรุปสัปดาห์"):
             return self.report("this_week", "รายงานบัญชีสัปดาห์นี้")
+        if low in ("สรุปวันนี้", "/today"):
+            return self.report("today", "สรุปวันนี้", with_comment=False)
+        if low in ("สรุปเดือนนี้", "/month"):
+            return self.report("this_month", "สรุปเดือนนี้")
+        if low in ("เป้า", "เป้าหมาย", "/goal"):
+            return self.report("this_month", "ความคืบหน้าเทียบเป้า", with_comment=False)
+        if low in ("help", "/help", "วิธีใช้", "คำสั่ง"):
+            return HELP
         m = re.match(r"^\s*(อนุมัติ|ไม่อนุมัติ)\s+([A-Za-z0-9]+)\s*$", t)
         if m:
             if not self.is_ceo(user_id):
@@ -211,8 +275,28 @@ class Team:
             if a["kind"] == "capital":
                 need_ceo()
             e = L.add_entry(a["kind"], a["category"], a["amount"], a.get("note", ""),
-                            on_date=a.get("date") or None)
-            return f"บันทึกแล้ว #{e.id}: {KINDS[e.kind]} {e.category} {baht(e.amount)} วันที่ {e.date}"
+                            on_date=a.get("date") or None, channel=a.get("channel", ""))
+            ch = f" ช่องทาง {e.channel}" if e.channel else ""
+            return f"บันทึกแล้ว #{e.id}: {KINDS[e.kind]} {e.category}{ch} {baht(e.amount)} วันที่ {e.date}"
+
+        def get_goals(a):
+            month = a.get("month") or today(self.s.TIMEZONE).strftime("%Y-%m")
+            return json.dumps({"month": month, "goal": L.goal_for(month), "channels": L.channels(),
+                               "saving_goal_total": L.get_setting(SET_SAVING_GOAL, "0")}, ensure_ascii=False)
+
+        def set_goal(a):
+            need_ceo()
+            month = (a.get("month") or "").strip() or None
+            L.set_goal(month, a["income"], a["profit"], a["saving"])
+            if a.get("saving_total") is not None:
+                L.set_setting(SET_SAVING_GOAL, float(a["saving_total"]))
+            return (f"ตั้งเป้า{' เดือน ' + month if month else 'ค่าเริ่มต้นทุกเดือน'} แล้ว: รายรับ {baht(a['income'])} "
+                    f"กำไร {baht(a['profit'])} เงินเก็บ {baht(a['saving'])}")
+
+        def set_channel_target(a):
+            need_ceo()
+            L.set_channel(a["name"], a["target"])
+            return f"ช่องทาง {a['name']} เป้า {baht(a['target'])}/เดือน แล้ว"
 
         def get_summary(a):
             start, end = period_range(a["period"], self.s.TIMEZONE)
@@ -225,7 +309,7 @@ class Team:
 
         def set_debt(a):
             need_ceo()
-            L.set_setting("debt_initial", float(a["amount"]))
+            L.set_setting(SET_DEBT, float(a["amount"]))
             return f"ตั้งยอดหนี้เริ่มต้น {baht(a['amount'])} แล้ว"
 
         def request_approval(a):
@@ -242,6 +326,9 @@ class Team:
         return {
             "add_entry": add_entry,
             "get_summary": get_summary,
+            "get_goals": get_goals,
+            "set_goal": set_goal,
+            "set_channel_target": set_channel_target,
             "list_budgets": lambda a: json.dumps(L.budgets(), ensure_ascii=False),
             "set_budget": set_budget,
             "set_debt": set_debt,
@@ -265,11 +352,13 @@ class Team:
                     self.client, model=self.s.MODEL_LEAD, max_tokens=600,
                     system=YUKI_SYSTEM.replace("{threshold}", "-").replace("{who}", "ระบบรายงานอัตโนมัติ"),
                     messages=[{"role": "user", "content":
-                               "เขียนความเห็นสั้น ๆ 3–5 บรรทัดถึง CEO จากตัวเลขนี้ "
-                               "(จุดที่ต้องระวัง สิ่งที่ควรทำต่อ และยอดที่ควรเติมทุน):\n"
+                               f"นี่คือ{title} เขียนถึง CEO ไม่เกิน 6 บรรทัด: "
+                               "1) สถานะเทียบเป้า (ทัน/ช้ากว่าแผนเท่าไร) "
+                               "2) งานสำคัญ 3 อย่างที่ควรทำในช่วงถัดไปเพื่อให้ถึงเป้า (เจาะจง ทำได้ทันที) "
+                               "3) เรื่องเงินที่ต้องระวัง ใช้ตัวเลขจากข้อมูลนี้เท่านั้น:\n"
                                + json.dumps(s, ensure_ascii=False)}])
                 if comment:
-                    text += "\n\nความเห็นจาก Yuki:\n" + comment
+                    text += "\n\nความเห็นและงานถัดไปจาก Yuki:\n" + comment
             except Exception:
                 pass  # รายงานตัวเลขยังส่งได้ แม้ AI ล่ม
         return text

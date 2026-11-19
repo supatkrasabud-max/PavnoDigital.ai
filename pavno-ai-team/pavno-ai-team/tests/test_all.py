@@ -1,4 +1,5 @@
 import base64
+import csv
 import hashlib
 import hmac
 import json
@@ -10,7 +11,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.agents import Team
-from app.ledger import CsvBackend, Ledger, format_report, period_range, summarize, today
+from app.ledger import (SET_DEBT, SET_SAVING_GOAL, CsvBackend, Ledger, format_report, num,
+                        period_range, summarize, today)
 from app.line_api import split_text
 from app.main import build_app
 
@@ -61,23 +63,57 @@ def ledger(tmp_path):
 # ------------------------------------------------------------------ ledger
 
 def test_summary_math(ledger):
-    d = today().isoformat()
-    ledger.set_setting("debt_initial", 3_000_000)
-    ledger.add_entry("capital", "ceo", 10_000)
-    ledger.add_entry("income", "pdf", 99)
-    ledger.add_entry("income", "bundle", 299)
-    ledger.add_entry("expense", "ads", 4_500)
-    ledger.add_entry("debt_payment", "loan", 1_000)
+    ledger.set_setting(SET_DEBT, 3_000_000)
+    ledger.add_entry("capital", "เงินทุน", 10_000)
+    ledger.add_entry("income", "ขายไฟล์ PDF (เว็บ/Stripe)", 99, channel="เว็บ PAVNO")
+    ledger.add_entry("income", "ค่าคอม Shopee Affiliate", 299, channel="Shopee")
+    ledger.add_entry("expense", "ค่าโฆษณา", 4_500)
+    ledger.add_entry("debt_payment", "เงินกู้", 1_000)
+    ledger.add_entry("saving", "เงินเก็บบริษัท", 500)
     s = ledger.summary(*period_range("this_month"))
     assert s["income"] == 398 and s["expense"] == 4500
     assert s["net_profit"] == -4102
-    assert s["cash_balance"] == 10_000 + 398 - 4500 - 1000
+    assert s["saving"] == 500 and s["saving_total"] == 500
+    assert s["cash_balance"] == 10_000 + 398 - 4500 - 1000 - 500
     assert s["debt_remaining"] == 2_999_000
-    ads = next(b for b in s["budget_status"] if b["category"] == "ads")
-    assert ads["over"] is True  # งบ ads 4,000
-    assert s["suggested_top_up"] == max(8000 - s["cash_balance"], 0)
+    ads = next(b for b in s["budget_status"] if b["category"] == "ค่าโฆษณา")
+    assert ads["over"] is True  # งบค่าโฆษณา 3,000
+    assert s["income_by_channel"] == {"เว็บ PAVNO": 99, "Shopee": 299}
     text = format_report(s, "ทดสอบ")
     assert "เกินงบ" in text and "หนี้คงเหลือ: 2,999,000 บาท" in text
+
+
+def test_sheet_columns_are_thai_and_match_web_app(tmp_path):
+    """แถวที่บอทเขียนต้องอยู่ในแท็บ/คอลัมน์เดียวกับเว็บแอป Yuki Ledger"""
+    led = Ledger(CsvBackend(str(tmp_path)))
+    led.add_entry("income", "ค่าคอม Shopee Affiliate", 1250, channel="Shopee", note="รอบ 15")
+    with open(tmp_path / "รายการ.csv", encoding="utf-8") as f:
+        head, row = list(csv.reader(f))[:2]
+    assert head[:9] == ["ID", "วันที่", "ประเภท", "ช่องทาง", "หมวด", "จำนวนเงิน", "ชำระด้วย", "หมายเหตุ", "บันทึกเมื่อ"]
+    assert row[2] == "รายรับ" and row[3] == "Shopee" and float(row[5]) == 1250
+    assert led.entries()[0]["kind"] == "income"
+
+
+def test_goals_and_channels(ledger):
+    month = today().strftime("%Y-%m")
+    ledger.set_goal(None, 30000, 15000, 5000)
+    assert ledger.goal_for(month) == {"income": 30000, "profit": 15000, "saving": 5000, "custom": False}
+    ledger.set_goal(month, 50000, 20000, 8000)
+    assert ledger.goal_for(month)["custom"] is True and ledger.goal_for(month)["income"] == 50000
+    ledger.set_channel("Lazada", 3000)
+    assert ledger.channels()["Lazada"] == 3000
+    ledger.add_entry("income", "รายรับอื่น", 1000, channel="Lazada")
+    ledger.set_setting(SET_SAVING_GOAL, 100000)
+    s = ledger.summary(*period_range("this_month"))
+    p = s["month_progress"]
+    assert p["income"] == 1000 and p["income_goal"] == 50000 and p["saving_goal"] == 8000
+    assert {"name": "Lazada", "target": 3000.0, "income": 1000.0} in s["channels"]
+    text = format_report(s, "เป้า")
+    assert "🎯 เป้าเดือน" in text and "Lazada" in text and "เงินเก็บสะสม" in text
+
+
+def test_numbers_from_sheet_strings():
+    assert num("1,200.50") == 1200.5 and num("") == 0 and num(None) == 0 and num(7) == 7
 
 
 def test_summary_period_filter():
@@ -134,7 +170,7 @@ def test_ami_delegates_and_asks_yuki(ledger):
 def test_non_ceo_cannot_add_capital_or_approve(ledger):
     claude = FakeClaude([("add_entry", {"kind": "capital", "category": "ceo", "amount": 5000}),
                          "ทำไม่ได้ค่ะ"])
-    team = Team(claude, ledger, cfg())
+    team = Team(claude, ledger, cfg(ALLOWED_USER_IDS=["U_CEO", "U_STAFF"]))
     team.handle("Yuki บันทึกเงินทุน 5000", "U_STAFF", "G1", True)
     tool_result = claude.calls[1]["messages"][-1]["content"][0]
     assert tool_result["is_error"] and "CEO" in tool_result["content"]
@@ -196,8 +232,26 @@ def test_cron_report(ledger):
     client = TestClient(build_app(Team(FakeClaude(["ยอดยังต่ำ ควรเพิ่มโพสต์"]), ledger, cfg()), line, cfg()))
     assert client.get("/cron/weekly?key=wrong").status_code == 403
     r = client.get("/cron/weekly?key=cron")
-    assert r.status_code == 200 and "รายรับ: 99 บาท" in r.text and "ความเห็นจาก Yuki" in r.text
+    assert r.status_code == 200 and "รายรับ: 99 บาท" in r.text and "ความเห็นและงานถัดไปจาก Yuki" in r.text
     assert line.sent[0][0] == "push" and line.sent[0][1] == "G1"
+
+
+def test_cron_daily_pushes_to_ceo_when_no_group(ledger):
+    line = FakeLine()
+    ledger.add_entry("income", "ค่าคอม Shopee Affiliate", 450, channel="Shopee",
+                     on_date=period_range("yesterday")[0].isoformat())
+    c = cfg(LINE_GROUP_ID="")
+    client = TestClient(build_app(Team(FakeClaude(["ทำคลิปเพิ่ม 2 คลิป"]), ledger, c), line, c))
+    r = client.get("/cron/daily?key=cron")
+    assert r.status_code == 200 and "รายรับ: 450 บาท" in r.text and "🎯 เป้าเดือน" in r.text
+    assert line.sent[0] == ("push", "U_CEO", "Yuki: " + r.text)
+
+
+def test_strangers_ignored_and_quick_commands(ledger):
+    team = Team(FakeClaude([]), ledger, cfg())
+    assert team.handle("Ami ขอดูบัญชี", "U_STRANGER", "U_STRANGER", False) is None
+    assert "สรุปวันนี้" in team.handle("วิธีใช้", "U_CEO", "U_CEO", False)
+    assert "🎯 เป้าเดือน" in team.handle("เป้า", "U_CEO", "U_CEO", False)
 
 
 def test_thai_names_route(ledger):

@@ -2,6 +2,7 @@
 
   POST /callback        ← LINE webhook (ข้อความจากกลุ่ม)
   POST /stripe/webhook  ← Stripe แจ้งเมื่อมีคนจ่ายเงิน → Yuki บันทึกรายรับอัตโนมัติ
+  GET  /cron/daily      ← Cloud Scheduler เรียกทุกเช้า → สรุปเมื่อวาน + ความคืบหน้าเทียบเป้า
   GET  /cron/weekly     ← Cloud Scheduler เรียกทุกวันจันทร์ → รายงานสัปดาห์ที่แล้ว
   GET  /cron/monthly    ← Cloud Scheduler เรียกทุกวันที่ 1 → รายงานเดือนที่แล้ว
   GET  /health
@@ -66,15 +67,16 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
         if not paid:
             return JSONResponse({"ignored": event.get("type")})
         amount = (obj.get("amount_total") or 0) / 100  # THB เก็บเป็นสตางค์
-        category = (obj.get("metadata") or {}).get("category", "pdf")
+        category = (obj.get("metadata") or {}).get("category", "ขายไฟล์ PDF (เว็บ/Stripe)")
         try:
             e = team.ledger.add_entry("income", category, amount,
                                       note=f"Stripe {obj.get('payment_link') or ''}".strip(),
-                                      recorded_by="Stripe", ref=obj.get("id", ""))
+                                      recorded_by="Stripe", ref=obj.get("id", ""), channel="เว็บ PAVNO")
         except ValueError as err:  # ซ้ำ (Stripe ส่งซ้ำได้)
             return JSONResponse({"skipped": str(err)})
-        if cfg.NOTIFY_EACH_SALE and cfg.LINE_GROUP_ID:
-            line.push(cfg.LINE_GROUP_ID, f"Yuki: มียอดขายใหม่ {baht(e.amount)} ({category}) บันทึกแล้วค่ะ")
+        target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID
+        if cfg.NOTIFY_EACH_SALE and target:
+            line.push(target, f"Yuki: มียอดขายใหม่ {baht(e.amount)} ({category}) บันทึกแล้วค่ะ")
         return JSONResponse({"recorded": e.id})
 
     def _cron(period: str, title: str):
@@ -82,8 +84,9 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
             if not cfg.CRON_SECRET or request.query_params.get("key") != cfg.CRON_SECRET:
                 return PlainTextResponse("forbidden", status_code=403)
             text = team.report(period, title)
-            if cfg.LINE_GROUP_ID:
-                line.push(cfg.LINE_GROUP_ID, "Yuki: " + text)
+            target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID  # กลุ่มบริษัท หรือแชต 1:1 กับ CEO
+            if target:
+                line.push(target, "Yuki: " + text)
             return PlainTextResponse(text)
         return handler
 
@@ -93,6 +96,7 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
     return Starlette(routes=[
         Route("/callback", callback, methods=["POST"]),
         Route("/stripe/webhook", stripe_webhook, methods=["POST"]),
+        Route("/cron/daily", _cron("yesterday", "สรุปประจำวัน (เมื่อวาน)"), methods=["GET", "POST"]),
         Route("/cron/weekly", _cron("last_week", "รายงานบัญชีประจำสัปดาห์"), methods=["GET", "POST"]),
         Route("/cron/monthly", _cron("last_month", "รายงานบัญชีประจำเดือน"), methods=["GET", "POST"]),
         Route("/health", health),
