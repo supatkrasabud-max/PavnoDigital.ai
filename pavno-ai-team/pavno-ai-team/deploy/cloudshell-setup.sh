@@ -15,17 +15,17 @@ SERVICE="pavno-ai-team"
 SA_NAME="pavno-ledger"
 SHEET_ID="${SHEET_ID:-148qT0GBDFxBPUFcAh3rDRAHAoJ1Qx6ziLUIeTnPALpI}"   # Google Sheet "PAVNO บัญชี"
 
-PROJECT="$(gcloud config get-value project 2>/dev/null)"
-if [[ -z "$PROJECT" ]]; then
-  echo "ยังไม่ได้เลือกโปรเจกต์: รัน  gcloud config set project <PROJECT_ID>  ก่อน"; exit 1
-fi
-SA_EMAIL="${SA_NAME}@${PROJECT}.iam.gserviceaccount.com"
-echo "== โปรเจกต์: $PROJECT  ภูมิภาค: $REGION"
-
 echo "== 0/6 รันเทสต์ก่อนติดตั้ง"
 python3 -m pip install -q --user -r requirements.txt pytest httpx
 python3 -m pytest -q || { echo "เทสต์ไม่ผ่าน ยกเลิกการติดตั้ง"; exit 1; }
 [[ "${TEST_ONLY:-}" == "1" ]] && { echo "TEST_ONLY=1 หยุดหลังเทสต์"; exit 0; }
+
+PROJECT="$(gcloud config get-value project 2>/dev/null)"
+if [[ -z "$PROJECT" ]]; then
+  echo "ยังไม่ได้เลือกโปรเจกต์: รัน  gcloud projects list  แล้ว  gcloud config set project <PROJECT_ID>  ก่อน"; exit 1
+fi
+SA_EMAIL="${SA_NAME}@${PROJECT}.iam.gserviceaccount.com"
+echo "== โปรเจกต์: $PROJECT  ภูมิภาค: $REGION"
 
 echo "== 1/6 เปิดใช้บริการที่ต้องใช้"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
