@@ -24,7 +24,7 @@ AVATAR_BASE_URL = os.environ.get(
     "AVATAR_BASE_URL",
     "https://raw.githubusercontent.com/supatkrasabud-max/PavnoDigital.ai/main/"
     "pavno-ai-team/pavno-ai-team/app/static").rstrip("/")
-SPEAKERS = {"Ami": "ami-photo.png", "Yuki": "yuki.png"}
+SPEAKERS = {"Ami": "ami-photo.png", "Yuki": "yuki-photo.png"}
 
 
 def sender_of(text: str) -> tuple[dict | None, str]:
