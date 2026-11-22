@@ -67,6 +67,11 @@ SHEETS: dict[str, tuple[str, list[tuple[str, str]]]] = {
         ("area", "พื้นที่"), ("contact", "ช่องทางติดต่อสาธารณะ"), ("source", "แหล่งข้อมูล"),
         ("offer", "ข้อเสนอ"), ("score", "คะแนน /10"), ("reason", "เหตุผล"), ("draft", "ร่างข้อความ"),
         ("status", "สถานะ"), ("updated", "อัปเดตล่าสุด"), ("reply", "ลูกค้าตอบ"), ("next_step", "ขั้นต่อไป")]),
+    # โพสต์เพจ Facebook: Ami ส่งร่างให้ CEO อนุมัติใน LINE แล้วตั้งเวลาโพสต์ผ่าน Graph API (app/facebook.py)
+    "Facebook": ("โพสต์_Facebook", [
+        ("id", "รหัส"), ("date", "วันที่โพสต์"), ("time", "เวลา"), ("product", "สินค้า"), ("title", "หัวข้อ"),
+        ("text", "ข้อความ"), ("images", "รูป (บรรทัดละ 1 ลิงก์)"), ("status", "สถานะ"),
+        ("fb_id", "รหัสโพสต์ Facebook"), ("updated", "อัปเดตล่าสุด"), ("note", "หมายเหตุ")]),
 }
 
 DEFAULT_BUDGET = {
