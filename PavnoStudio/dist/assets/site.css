@@ -187,3 +187,18 @@ section.s{padding:64px 0}
 @media(max-width:700px){.ftr .wrap{grid-template-columns:1fr 1fr}.ftr .about{grid-column:1/-1}}
 .pay{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .pay span{background:rgba(255,255,255,.1);border-radius:8px;padding:3px 9px;font-size:12px}
+/* club: monthly pack details */
+.club-h{font-family:var(--head);font-size:21px;margin:24px 0 12px}
+.pack{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:left}
+.pack div{background:var(--bg);border-radius:14px;padding:14px 16px}
+.pack b{display:block;font-size:15.5px}
+.pack span{display:block;font-size:14px;color:var(--muted);line-height:1.5;margin-top:2px}
+.club-note{font-size:14px;margin-top:12px}
+.plan .per{display:block}
+.plan ul{list-style:none;padding:0;margin:12px auto 0;font-size:14.5px;text-align:left;width:fit-content}
+.plan li:before{content:'✓ ';color:var(--grn);font-weight:700}
+.yearval{background:#fff6e0;border-radius:18px;padding:18px 22px;margin:0 auto 22px;max-width:720px;text-align:left}
+.yearval b{font-family:var(--head);font-size:18px;display:block;margin-bottom:6px}
+.yearval ul{margin:0;padding-left:20px;font-size:15px}
+.yearval span{display:block;margin-top:8px;font-size:13.5px;color:var(--muted)}
+@media(max-width:700px){.pack{grid-template-columns:1fr}}
