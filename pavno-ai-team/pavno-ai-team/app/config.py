@@ -47,5 +47,12 @@ class Settings:
     APPROVAL_THRESHOLD = float(_get("APPROVAL_THRESHOLD", "2000"))
     TIMEZONE = _get("TIMEZONE", "Asia/Bangkok")
 
+    # เพจ Facebook: Ami ตั้งเวลาโพสต์หลัง CEO อนุมัติ (FB_PAGE_TOKEN เป็นความลับ เก็บใน Secret Manager)
+    FB_PAGE_ID = _get("FB_PAGE_ID")
+    FB_PAGE_TOKEN = _get("FB_PAGE_TOKEN")
+    FB_GRAPH_VERSION = _get("FB_GRAPH_VERSION", "v21.0")
+    # ที่อยู่สาธารณะของบอท ใช้ทำลิงก์หน้าดูร่างโพสต์ที่ส่งใน LINE
+    PUBLIC_BASE_URL = _get("PUBLIC_BASE_URL", "https://pavno-ai-team-856724275661.asia-southeast1.run.app")
+
 
 settings = Settings()

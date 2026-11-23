@@ -7,6 +7,7 @@ from collections import defaultdict, deque
 
 from .ledger import (KINDS, SET_DEBT, SET_SAVING_GOAL, Ledger, baht, format_report,
                      period_range, today)
+from .facebook import HELP_FB, Social
 from .llm import run_agent
 from .pipelines import Pipelines
 
@@ -171,6 +172,8 @@ HELP = """คำสั่งที่ใช้ได้ (แชต 1:1 กับ
 • อนุมัติลีด S1A2B / ไม่อนุมัติลีด S1A2B / ส่งแล้ว S1A2B
 • ตอบกลับ S1A2B สนใจ ขอราคา
 
+""" + HELP_FB + """
+
 รายงานอัตโนมัติ: ทุกวัน 08:00 · ทุกวันจันทร์ 09:00 · ทุกวันที่ 1 เวลา 09:00"""
 
 # ชื่อต้องตามด้วยช่องว่าง/เครื่องหมาย/จบข้อความ (\b ใช้กับสระไทยไม่ได้)
@@ -192,6 +195,7 @@ class Team:
         self.s = settings
         self.history: dict[str, deque] = defaultdict(lambda: deque(maxlen=12))
         self.pipes = Pipelines(client, ledger, settings)
+        self.social = Social(ledger, settings)
 
     # ---------------------------------------------------------------- routing
     def ceo_ids(self) -> list[str]:
@@ -240,6 +244,14 @@ class Team:
             word = "อนุมัติแล้ว" if r["status"] == "approved" else "ไม่อนุมัติ"
             return (f"Yuki: {word} {r['id']} — {r['category']} {baht(float(r['amount']))}"
                     f" ({r['reason']})\nเมื่อจ่ายเงินจริงแล้ว พิมพ์ \"Yuki บันทึกจ่าย ...\" ได้เลยค่ะ")
+
+        if self.is_ceo(user_id):  # คำสั่งโพสต์ Facebook เช่น "โพสต์" "อนุมัติโพสต์ทั้งหมด" (พิมพ์ "Ami ..." นำหน้าได้)
+            try:
+                out = self.social.command(AMI_RE.sub("", t, count=1) or t)
+            except ValueError as e:
+                out = str(e)
+            if out:
+                return out if out.startswith("Ami:") else "Ami: " + out
 
         if self.is_ceo(user_id):  # คำสั่งพนักงาน Affiliate / Sales เช่น "ลีด" "อนุมัติลีด S1A2" "ค่าคอม AF12 10%"
             try:

@@ -4,7 +4,8 @@ import hashlib
 import hmac
 import json
 import time
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 from types import SimpleNamespace
 
 import pytest
@@ -395,3 +396,129 @@ def test_job_error_alerts_ceo(ledger):
     assert r.status_code == 500
     assert line.sent == [("push", "U_CEO", line.sent[0][2])] and "credit balance" in line.sent[0][2]
     assert client.get("/cron/affiliate?key=nope").status_code == 403
+
+
+# ------------------------------------------------------------------ Facebook posts (Ami)
+
+from app.facebook import APPROVED, POSTED, REJECTED, SCHEDULED, WAIT, Social, load_drafts, parse_when, view_key
+
+
+class FakePage:
+    def __init__(self, ready=True):
+        self.ready = ready
+        self.calls = []
+
+    def post(self, message, images, publish_at):
+        self.calls.append((message, images, publish_at))
+        return f"PAGE_{len(self.calls)}"
+
+
+def _draft(days_ahead, title="หัวข้อ", product="thai-abc"):
+    d = (today() + timedelta(days=days_ahead)).isoformat()
+    return {"date": d, "time": "19:30", "product": product, "title": title, "text": f"ข้อความ {title}",
+            "images": ["https://www.pavnodigital.com/assets/products/thai-abc-page.jpg"]}
+
+
+def test_bundled_drafts_are_valid():
+    posts = load_drafts()
+    assert len(posts) >= 14
+    for p in posts:
+        assert p["text"].strip() and p["images"] and all(u.startswith("https://") for u in p["images"])
+        assert "pavnodigital.com/books/?product=" in p["text"]
+        parse_when(p["date"], p["time"], "Asia/Bangkok")
+
+
+def test_parse_when_formats():
+    a = parse_when("2026-12-04", "19:30", "Asia/Bangkok")
+    assert parse_when("4/12/2026", "19:30:00", "Asia/Bangkok") == a
+    assert parse_when("2026-12-04", 0.8125, "Asia/Bangkok") == a  # 19:30 เป็นเศษส่วนของวันจากชีต
+
+
+def test_import_is_idempotent_and_overview_has_link(ledger):
+    s = Social(ledger, cfg(PUBLIC_BASE_URL="https://bot.example"), FakePage())
+    assert len(s.import_drafts([_draft(3), _draft(4, "สอง")])) == 2
+    assert s.import_drafts([_draft(3), _draft(4, "สอง")]) == []
+    text = s.overview()
+    assert "รออนุมัติ 2" in text and f"https://bot.example/fb/drafts?k={view_key('cron')}" in text
+
+
+def test_approve_schedules_only_approved_posts(ledger):
+    page = FakePage()
+    s = Social(ledger, cfg(), page)
+    a, b = s.import_drafts([_draft(3, "หนึ่ง"), _draft(4, "สอง")])
+    out = s.command(f"อนุมัติโพสต์ {a['id']}")
+    assert "อนุมัติ 1 โพสต์" in out and len(page.calls) == 1
+    msg, imgs, when = page.calls[0]
+    assert msg == "ข้อความ หนึ่ง" and imgs[0].endswith("thai-abc-page.jpg") and when.hour == 19 and when.minute == 30
+    rows = {r["id"]: r for r in ledger.pipeline("Facebook")}
+    assert rows[a["id"]]["status"] == SCHEDULED and rows[a["id"]]["fb_id"] == "PAGE_1"
+    assert rows[b["id"]]["status"] == WAIT
+    assert "ตั้งเวลาแล้ว" in s.command(f"อนุมัติโพสต์ {a['id']}")  # อนุมัติซ้ำไม่โพสต์ซ้ำ
+    assert len(page.calls) == 1
+
+
+def test_approve_all_without_page_waits_then_schedules(ledger):
+    s = Social(ledger, cfg(), FakePage(ready=False))
+    s.import_drafts([_draft(3, "หนึ่ง"), _draft(4, "สอง")])
+    assert "ยังไม่ได้เชื่อมเพจ" in s.command("อนุมัติโพสต์ทั้งหมด")
+    assert {r["status"] for r in ledger.pipeline("Facebook")} == {APPROVED}
+    s.page = FakePage()
+    out = s.command("ตั้งเวลาโพสต์")
+    assert out.count("✅") == 2 and len(s.page.calls) == 2
+
+
+def test_past_far_reject_edit_and_move(ledger):
+    page = FakePage()
+    s = Social(ledger, cfg(), page)
+    past, far, ok = s.import_drafts([_draft(-1, "อดีต"), _draft(40, "ไกล"), _draft(2, "แก้")])
+    out = s.command(f"อนุมัติโพสต์ {past['id']} {far['id']}")
+    assert "เลยเวลาโพสต์แล้ว" in out and "ไกลเกิน 29 วัน" in out and not page.calls
+    assert {r["status"] for r in ledger.pipeline("Facebook") if r["id"] != ok["id"]} == {APPROVED}
+    new_day = (today() + timedelta(days=5)).isoformat()
+    assert "เลื่อน" in s.command(f"เลื่อนโพสต์ {past['id']} {new_day} 12:00")
+    assert "✅" in s.command("ตั้งเวลาโพสต์") and page.calls[-1][2].hour == 12
+    assert "กลับไปรออนุมัติ" in s.command(f"แก้โพสต์ {ok['id']} ข้อความใหม่ทั้งโพสต์")
+    assert REJECTED in s.command(f"ไม่อนุมัติโพสต์ {ok['id']}")
+    row = next(r for r in ledger.pipeline("Facebook") if r["id"] == ok["id"])
+    assert row["text"] == "ข้อความใหม่ทั้งโพสต์" and row["status"] == REJECTED
+
+
+def test_post_now_when_time_is_close(ledger):
+    page = FakePage()
+    s = Social(ledger, cfg(), page)
+    now = datetime.now(ZoneInfo("Asia/Bangkok")) + timedelta(minutes=5)
+    r = s.import_drafts([{**_draft(0, "ด่วน"), "date": now.date().isoformat(), "time": now.strftime("%H:%M")}])[0]
+    s.command(f"อนุมัติโพสต์ {r['id']}")
+    assert page.calls[0][2] is None
+    assert ledger.pipeline("Facebook")[0]["status"] == POSTED
+
+
+def test_line_commands_are_ceo_only_and_accept_ami_prefix(ledger):
+    team = Team(FakeClaude([]), ledger, cfg())
+    team.social.page = FakePage()
+    team.social.import_drafts([_draft(3)])
+    assert team.handle("โพสต์", "U_OTHER", "U_OTHER", is_group=False) is None  # ไม่ใช่ทีม
+    out = team.handle("Ami อนุมัติโพสต์ทั้งหมด", "U_CEO", "U_CEO", is_group=False)
+    assert out.startswith("Ami: อนุมัติ 1 โพสต์") and len(team.social.page.calls) == 1
+
+
+def test_drafts_page_needs_key_and_escapes_html(ledger):
+    line = FakeLine()
+    team = Team(FakeClaude([]), ledger, cfg())
+    team.social.import_drafts([{**_draft(3, "<script>x</script>")}])
+    client = TestClient(build_app(team, line, cfg()))
+    assert client.get("/fb/drafts?k=wrong").status_code == 403
+    r = client.get(f"/fb/drafts?k={view_key('cron')}")
+    assert r.status_code == 200 and "&lt;script&gt;" in r.text and "<script>x" not in r.text
+    assert "อนุมัติโพสต์ FB" in r.text
+
+
+def test_daily_cron_imports_and_reminds_ceo(ledger):
+    line = FakeLine()
+    team = Team(FakeClaude(["ok"]), ledger, cfg())
+    team.social.page = FakePage(ready=False)
+    client = TestClient(build_app(team, line, cfg()))
+    assert client.get("/cron/daily?key=cron").status_code == 200
+    ami = [m for m in line.sent if m[2].startswith("Ami:")]
+    assert ami and ami[0][1] == "U_CEO" and "รออนุมัติทั้งหมด" in ami[0][2]
+    assert len(ledger.pipeline("Facebook")) == len(load_drafts())

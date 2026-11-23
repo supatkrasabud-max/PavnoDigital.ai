@@ -9,6 +9,7 @@
   GET  /cron/sales       ← จันทร์–ศุกร์ 06:30 → Sales Agent หาลีด + ร่างข้อความ (รอ CEO อนุมัติ)
   GET  /cron/sales-summary ← จันทร์–ศุกร์ 17:00 → สรุปงานขาย
   (ใส่ &dry=1 เพื่อทดลองรันโดยไม่บันทึกและไม่ส่ง LINE)
+  GET  /fb/drafts?k=…    ← หน้าดูร่างโพสต์ Facebook ที่ Ami ส่งลิงก์ให้ CEO ใน LINE
   GET  /health
 """
 from __future__ import annotations
@@ -22,12 +23,13 @@ import time
 from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request
-from starlette.responses import JSONResponse, PlainTextResponse
+from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.routing import Route
 
 from .agents import Team
 from .alerts import alert_error
 from .config import settings
+from .facebook import view_key
 from .ledger import baht, make_ledger
 from .line_api import LineClient, verify_signature
 from .llm import ClaudeClient
@@ -106,8 +108,25 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
             target = cfg.LINE_GROUP_ID or cfg.CEO_USER_ID.split(",")[0].strip()  # กลุ่มบริษัท หรือแชต 1:1 กับ CEO
             if target:
                 line.push(target, "Yuki: " + text)
+            if period == "yesterday":  # รายงานเช้า: Ami นำเข้าร่างโพสต์ใหม่ ตั้งเวลาที่อนุมัติแล้ว และเตือนร่างที่รออนุมัติ
+                try:
+                    fb = await run_in_threadpool(team.social.daily)
+                    ceo = cfg.CEO_USER_ID.split(",")[0].strip()  # ส่งหา CEO 1:1 เพราะต้องให้ CEO อนุมัติ
+                    if fb and ceo:
+                        line.push(ceo, fb)
+                except Exception as err:
+                    log.exception("facebook daily failed")
+                    alert_error(cfg, line, "โพสต์ Facebook", err)
             return PlainTextResponse(text)
         return handler
+
+    async def fb_drafts(request: Request):
+        """หน้าดูร่างโพสต์ Facebook (ลิงก์ที่ Ami ส่งใน LINE) ใช้รหัสที่ได้จาก CRON_SECRET"""
+        key = view_key(cfg.CRON_SECRET)
+        if not key or not hmac.compare_digest(request.query_params.get("k", ""), key):
+            return PlainTextResponse("forbidden", status_code=403)
+        page = await run_in_threadpool(team.social.drafts_html)
+        return HTMLResponse(page, headers={"Cache-Control": "no-store", "X-Robots-Tag": "noindex"})
 
     def _job(name: str, run, prefix: str = ""):
         """งานตั้งเวลาของพนักงาน AI: รัน → ส่ง LINE → ถ้าพังแจ้ง error (Telegram/LINE)"""
@@ -141,6 +160,7 @@ def build_app(team: Team | None = None, line: LineClient | None = None, cfg=sett
         Route("/cron/sales", _job("sales", lambda dry: team.pipes.run_sales(dry=dry)), methods=["GET", "POST"]),
         Route("/cron/sales-summary", _job("sales-summary", lambda dry: team.pipes.sales_summary()),
               methods=["GET", "POST"]),
+        Route("/fb/drafts", fb_drafts),
         Route("/health", health),
     ])
 

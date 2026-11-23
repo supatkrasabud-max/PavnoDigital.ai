@@ -67,6 +67,11 @@ EXTRA=""
 if secret_exists TELEGRAM_BOT_TOKEN; then
   SECRETS="$SECRETS,TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN:latest"; EXTRA="TELEGRAM_BOT_TOKEN"
 fi
+# โพสต์เพจ Facebook ผ่าน Ami (ไม่บังคับ): ตั้งด้วย  ADD_FACEBOOK=1 bash deploy/cloudshell-setup.sh
+[[ "${ADD_FACEBOOK:-}" == "1" ]] && FORCE_ASK=1 ask_secret FB_PAGE_TOKEN "Facebook Page access token (แบบไม่หมดอายุ)"
+if secret_exists FB_PAGE_TOKEN; then
+  SECRETS="$SECRETS,FB_PAGE_TOKEN=FB_PAGE_TOKEN:latest"; EXTRA="$EXTRA FB_PAGE_TOKEN"
+fi
 for s in GOOGLE_SERVICE_ACCOUNT_JSON ANTHROPIC_API_KEY LINE_CHANNEL_SECRET LINE_CHANNEL_ACCESS_TOKEN CRON_SECRET STRIPE_WEBHOOK_SECRET $EXTRA; do
   gcloud secrets add-iam-policy-binding "$s" --member "serviceAccount:$RUN_SA" \
     --role roles/secretmanager.secretAccessor >/dev/null
@@ -77,7 +82,7 @@ EXISTING_ENV=""
 if gcloud run services describe "$SERVICE" --region "$REGION" >/dev/null 2>&1; then
   EXISTING_ENV="yes"
 fi
-ENV_VARS="LEDGER_BACKEND=sheets,GOOGLE_SHEET_ID=${SHEET_ID},TIMEZONE=Asia/Bangkok,MODEL_LEAD=claude-sonnet-5-5,MODEL_WORKER=claude-haiku-5-5"
+ENV_VARS="LEDGER_BACKEND=sheets,GOOGLE_SHEET_ID=${SHEET_ID},TIMEZONE=Asia/Bangkok,MODEL_LEAD=claude-sonnet-5-5,MODEL_WORKER=claude-haiku-5-5,FB_PAGE_ID=${FB_PAGE_ID:-61597020621548}"
 gcloud run deploy "$SERVICE" --source . --region "$REGION" \
   --allow-unauthenticated --max-instances 1 --memory 512Mi --timeout 900 \
   $( [[ -z "$EXISTING_ENV" ]] && echo "--set-env-vars $ENV_VARS" || echo "--update-env-vars $ENV_VARS" ) \
