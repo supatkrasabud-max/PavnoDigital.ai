@@ -47,8 +47,8 @@ class ClaudeAPIError(RuntimeError):
 ToolHandler = Callable[[dict], str]
 
 # ค้นเว็บฝั่งเซิร์ฟเวอร์ของ Anthropic (ประมาณ $10 ต่อ 1,000 ครั้งค้น + ค่า token)
-WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search",
-              "user_location": {"type": "approximate", "country": "TH", "timezone": "Asia/Bangkok"}}
+# ไม่ใส่ user_location: API ตอบ 400 "Country code TH is not supported" (พรอมต์ระบุประเทศไทยอยู่แล้ว)
+WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search"}
 
 
 def research(client, *, model: str, system: str, prompt: str, max_searches: int = 6,
