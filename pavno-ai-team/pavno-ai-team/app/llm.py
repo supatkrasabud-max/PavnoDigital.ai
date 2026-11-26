@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import urllib.error
 import urllib.request
 from typing import Callable
 
@@ -27,15 +28,27 @@ class ClaudeClient:
             },
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=300) as resp:  # งานค้นเว็บใช้เวลาได้หลายนาที
-            return json.loads(resp.read())
+        try:
+            with urllib.request.urlopen(req, timeout=300) as resp:  # งานค้นเว็บใช้เวลาได้หลายนาที
+                return json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            # เดิมได้แค่ "HTTP Error 400: Bad Request" ไม่รู้สาเหตุ ให้แนบข้อความจาก Claude API มาด้วย
+            try:
+                detail = json.loads(e.read()).get("error", {}).get("message", "")
+            except Exception:
+                detail = ""
+            raise ClaudeAPIError(f"Claude API {e.code}: {detail or e.reason}") from None
+
+
+class ClaudeAPIError(RuntimeError):
+    pass
 
 
 ToolHandler = Callable[[dict], str]
 
 # ค้นเว็บฝั่งเซิร์ฟเวอร์ของ Anthropic (ประมาณ $10 ต่อ 1,000 ครั้งค้น + ค่า token)
-WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search",
-              "user_location": {"type": "approximate", "country": "TH", "timezone": "Asia/Bangkok"}}
+# ไม่ใส่ user_location: API ตอบ 400 "Country code TH is not supported" (พรอมต์ระบุประเทศไทยอยู่แล้ว)
+WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search"}
 
 
 def research(client, *, model: str, system: str, prompt: str, max_searches: int = 6,

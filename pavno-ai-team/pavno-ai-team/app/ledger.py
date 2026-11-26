@@ -19,6 +19,7 @@ import csv
 import json
 import os
 import threading
+import time
 import uuid
 from dataclasses import dataclass, asdict, field
 from datetime import date, datetime, timedelta
@@ -198,29 +199,48 @@ class SheetsBackend(_Backend):
         import gspread  # noqa: import เฉพาะตอนใช้งานจริง
         info = json.loads(service_account_json)
         gc = gspread.service_account_from_dict(info)
+        self._api_error = gspread.exceptions.APIError
         self.book = gc.open_by_key(sheet_id)
-        existing = {ws.title for ws in self.book.worksheets()}
+        # เก็บแท็บไว้ใช้ซ้ำ: เดิมเรียก book.worksheet() ทุกครั้งที่อ่าน/เขียน = อ่านชีตเพิ่ม 1 ครั้ง
+        # ทำให้ชนโควตา Google Sheets 60 ครั้ง/นาที (error 429) ตอนนำเข้าโพสต์หลายรายการ
+        self._tabs = {ws.title: ws for ws in self.book.worksheets()}
         for phys, cols in SHEETS.values():
-            if phys not in existing:  # แท็บที่เว็บแอปยังไม่ได้สร้าง (เช่น คำขออนุมัติ)
+            if phys not in self._tabs:  # แท็บที่เว็บแอปยังไม่ได้สร้าง (เช่น คำขออนุมัติ)
                 ws = self.book.add_worksheet(title=phys, rows=1000, cols=len(cols))
                 ws.append_row([h for _, h in cols])
+                self._tabs[phys] = ws
 
     def _ws(self, phys: str):
-        return self.book.worksheet(phys)
+        ws = self._tabs.get(phys)
+        if ws is None:
+            ws = self._tabs[phys] = self._retry(self.book.worksheet, phys)
+        return ws
+
+    def _retry(self, fn, *args, **kwargs):
+        """ถ้าโดน 429 (เกินโควตาต่อนาที) รอแล้วลองใหม่ สูงสุด 3 ครั้ง"""
+        for attempt in range(4):
+            try:
+                return fn(*args, **kwargs)
+            except self._api_error as e:
+                code = getattr(getattr(e, "response", None), "status_code", None)
+                if code != 429 or attempt == 3:
+                    raise
+                time.sleep(20 * (attempt + 1))
 
     def _raw_rows(self, phys, headers):
-        values = self._ws(phys).get_all_values(value_render_option="UNFORMATTED_VALUE",
-                                               date_time_render_option="FORMATTED_STRING")
+        values = self._retry(self._ws(phys).get_all_values, value_render_option="UNFORMATTED_VALUE",
+                             date_time_render_option="FORMATTED_STRING")
         return values[1:]
 
     def _raw_append(self, phys, values):
-        self._ws(phys).append_row(values, value_input_option="USER_ENTERED")
+        self._retry(self._ws(phys).append_row, values, value_input_option="USER_ENTERED")
 
     def _raw_overwrite(self, phys, headers, rows):
         ws = self._ws(phys)
-        ws.batch_clear([f"A2:{chr(64 + len(headers))}{max(ws.row_count, 2)}"])
+        # ช่วงแบบเปิดท้าย (A2:Z) ไม่พึ่ง row_count ที่อาจค้างจากแท็บที่เก็บไว้
+        self._retry(ws.batch_clear, [f"A2:{chr(64 + len(headers))}"])
         if rows:
-            ws.update(range_name="A2", values=rows, value_input_option="USER_ENTERED")
+            self._retry(ws.update, range_name="A2", values=rows, value_input_option="USER_ENTERED")
 
 
 # --------------------------------------------------------------------------- ledger
